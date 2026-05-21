@@ -1,6 +1,6 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { AlertTriangle, ArrowDown, ArrowUp, Boxes, CheckCircle2, CirclePlus, Play, RotateCcw, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Menu, Play, Plus, Trash2, X } from "lucide-react";
 import "./styles.css";
 
 type StageId = "model" | "purify" | "infuse" | "release";
@@ -57,24 +57,20 @@ type CompileResult = {
   spell_name: string;
   summary: string;
   stage_outcomes: { stage: StageId; label: string; result: string; node_instance_ids: string[]; tags: string[] }[];
-  issues: { rule_id: string; severity: "error" | "warning" | "unsafe"; stage: StageId | null; node_instance_id: string | null; message: string; suggestion: string }[];
-  radar: { key: string; label: string; value: number; direction: "higher_better"; reason: string }[];
+  issues: { severity: "error" | "warning" | "unsafe" }[];
+  radar: { key: string; label: string; value: number; direction: "higher_better" | "higher_worse"; reason: string }[];
   spell_card: {
     title: string;
     summary: string;
     chain: string[];
-    conditions: string[];
-    costs: string[];
-    risks: string[];
-    suggestions: string[];
   };
 };
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? "http://127.0.0.1:8000";
 const storageKey = "spell-graph-builder-state";
 
-const fallbackBuild: CompileRequest = {
-  intent: "远程伤害",
+const defaultBuild: CompileRequest = {
+  intent: "法术构建",
   stages: [
     { stage: "model", nodes: [{ instance_id: "model-1", node_id: "model_sphere" }] },
     { stage: "purify", nodes: [{ instance_id: "purify-1", node_id: "purify_fire" }] },
@@ -87,26 +83,20 @@ const fallbackBuild: CompileRequest = {
 
 function App() {
   const [library, setLibrary] = React.useState<NodeLibrary | null>(null);
-  const [examples, setExamples] = React.useState<CompileRequest[]>([]);
   const [build, setBuild] = React.useState<CompileRequest>(() => {
     const saved = localStorage.getItem(storageKey);
-    return saved ? (JSON.parse(saved) as CompileRequest) : fallbackBuild;
+    return saved ? (JSON.parse(saved) as CompileRequest) : defaultBuild;
   });
+  const [activeStageId, setActiveStageId] = React.useState<StageId>("model");
+  const [drawerOpen, setDrawerOpen] = React.useState(true);
   const [result, setResult] = React.useState<CompileResult | null>(null);
-  const [selectedInstanceId, setSelectedInstanceId] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [apiError, setApiError] = React.useState("");
 
   React.useEffect(() => {
-    Promise.all([fetchJson<NodeLibrary>("/api/nodes"), fetchJson<CompileRequest[]>("/api/examples")])
-      .then(([nodeLibrary, exampleList]) => {
-        setLibrary(nodeLibrary);
-        setExamples(exampleList);
-        if (!localStorage.getItem(storageKey) && exampleList[0]) {
-          setBuild(exampleList[0]);
-        }
-      })
-      .catch(() => setApiError("无法连接后端 API，请确认 uvicorn 已在 127.0.0.1:8000 运行。"));
+    fetchJson<NodeLibrary>("/api/nodes")
+      .then(setLibrary)
+      .catch(() => setApiError("无法连接后端 API。"));
   }, []);
 
   React.useEffect(() => {
@@ -120,9 +110,8 @@ function App() {
   }, [library]);
 
   const nodeMap = React.useMemo(() => new Map(library?.nodes.map((node) => [node.id, node]) ?? []), [library]);
-  const selectedNode = findInstance(build, selectedInstanceId);
-  const selectedDefinition = selectedNode ? nodeMap.get(selectedNode.node_id) : null;
-  const selectedStage = selectedDefinition ? library?.stages.find((stage) => stage.id === selectedDefinition.stage) : null;
+  const activeStage = library?.stages.find((stage) => stage.id === activeStageId);
+  const activeNodes = library?.nodes.filter((node) => node.stage === activeStageId) ?? [];
 
   async function compile(current = build) {
     setLoading(true);
@@ -142,19 +131,9 @@ function App() {
     }
   }
 
-  function loadExample(example: CompileRequest) {
-    const next = cloneBuild(example);
-    setBuild(next);
-    setSelectedInstanceId("");
-    void compile(next);
-  }
-
-  function updateIntent(intent: string) {
-    setBuild((current) => ({ ...current, intent }));
-  }
-
-  function updateCaster(key: keyof CompileRequest["caster"], value: number) {
-    setBuild((current) => ({ ...current, caster: { ...current.caster, [key]: value } }));
+  function openStage(stageId: StageId) {
+    setActiveStageId(stageId);
+    setDrawerOpen(true);
   }
 
   function addNode(node: NodeDefinition) {
@@ -163,7 +142,6 @@ function App() {
       ...current,
       stages: current.stages.map((stage) => (stage.stage === node.stage ? { ...stage, nodes: [...stage.nodes, instance] } : stage)),
     }));
-    setSelectedInstanceId(instance.instance_id);
   }
 
   function moveNode(stageId: StageId, instanceId: string, direction: -1 | 1) {
@@ -188,13 +166,11 @@ function App() {
         stage.stage === stageId ? { ...stage, nodes: stage.nodes.filter((node) => node.instance_id !== instanceId) } : stage,
       ),
     }));
-    if (selectedInstanceId === instanceId) setSelectedInstanceId("");
   }
 
   if (!library) {
     return (
       <main className="loading">
-        <Boxes size={28} />
         <span>正在载入节点库</span>
         {apiError && <strong>{apiError}</strong>}
       </main>
@@ -202,117 +178,72 @@ function App() {
   }
 
   return (
-    <main className="app">
+    <main className={drawerOpen ? "app drawer-open" : "app drawer-closed"}>
       <header className="topbar">
-        <div>
-          <p>轰界</p>
+        <button className="drawer-toggle" onClick={() => setDrawerOpen((value) => !value)} aria-label={drawerOpen ? "收起节点栏" : "展开节点栏"}>
+          {drawerOpen ? <X size={19} /> : <Menu size={19} />}
+        </button>
+        <div className="brand">
+          <span>轰界</span>
           <h1>法术生成器</h1>
         </div>
-        <div className="topbar-actions">
-          <span>节点库 {library.version}</span>
-          <button onClick={() => compile()} disabled={loading}>
-            <Play size={17} />
-            {loading ? "编译中" : "编译"}
-          </button>
-        </div>
+        <button className="compile-button" onClick={() => compile()} disabled={loading}>
+          <Play size={17} />
+          {loading ? "编译中" : "编译"}
+        </button>
       </header>
 
       <section className="workspace">
-        <aside className="palette">
-          <SectionTitle icon={<Boxes size={18} />} text="节点库" />
-          <div className="field">
-            <label>施法意图</label>
-            <input value={build.intent} onChange={(event) => updateIntent(event.target.value)} />
+        <aside className="node-drawer">
+          <div className="drawer-head">
+            <span>节点</span>
+            <strong>{activeStage?.name}</strong>
           </div>
-          <div className="caster-grid">
-            <label>
-              专注
-              <input type="range" min={0} max={100} value={build.caster.focus} onChange={(event) => updateCaster("focus", Number(event.target.value))} />
-              <span>{build.caster.focus}</span>
-            </label>
-            <label>
-              控制
-              <input type="range" min={0} max={100} value={build.caster.control} onChange={(event) => updateCaster("control", Number(event.target.value))} />
-              <span>{build.caster.control}</span>
-            </label>
-            <label>
-              学识
-              <input
-                type="range"
-                min={0}
-                max={10}
-                value={build.caster.knowledge}
-                onChange={(event) => updateCaster("knowledge", Number(event.target.value))}
-              />
-              <span>{build.caster.knowledge}</span>
-            </label>
-          </div>
-          <div className="example-list">
-            {examples.map((example) => (
-              <button key={example.id} onClick={() => loadExample(example)}>
-                <RotateCcw size={14} />
-                {example.id}
+          <div className="stage-tabs">
+            {library.stages.map((stage, index) => (
+              <button className={stage.id === activeStageId ? "active" : ""} key={stage.id} onClick={() => openStage(stage.id)}>
+                <span>{index + 1}</span>
+                {stage.name}
               </button>
             ))}
           </div>
-          {library.stages.map((stage) => (
-            <section className="node-group" key={stage.id}>
-              <h2>{stage.name}</h2>
-              <p>{stage.purpose}</p>
-              <div className="node-list">
-                {library.nodes
-                  .filter((node) => node.stage === stage.id)
-                  .map((node) => (
-                    <button className={`library-node ${node.stage}`} key={node.id} onClick={() => addNode(node)}>
-                      <CirclePlus size={15} />
-                      <span>{node.name}</span>
-                    </button>
-                  ))}
-              </div>
-            </section>
-          ))}
+          <div className="node-picker">
+            {activeNodes.map((node) => (
+              <button className={`pick-node ${node.stage}`} key={node.id} onClick={() => addNode(node)}>
+                <Plus size={14} />
+                <span>{node.name}</span>
+              </button>
+            ))}
+          </div>
         </aside>
 
         <section className="builder">
           <div className="stage-flow">
-            {library.stages.map((stage, stageIndex) => {
+            {library.stages.map((stage, index) => {
               const stageBuild = build.stages.find((item) => item.stage === stage.id);
               return (
                 <React.Fragment key={stage.id}>
-                  <section className={`stage-column ${stage.id}`}>
-                    <div className="stage-head">
-                      <span>{stageIndex + 1}</span>
-                      <div>
-                        <h2>{stage.name}</h2>
-                        <p>{outcomeFor(result, stage.id) ?? stage.purpose}</p>
-                      </div>
-                    </div>
+                  <section className={`stage-column ${stage.id} ${stage.id === activeStageId ? "active" : ""}`} onClick={() => openStage(stage.id)}>
+                    <button className="stage-title" onClick={() => openStage(stage.id)}>
+                      <span>{index + 1}</span>
+                      <strong>{stage.name}</strong>
+                    </button>
+                    <div className="stage-result">{outcomeFor(result, stage.id) ?? stage.purpose}</div>
                     <div className="stage-nodes">
-                      {(stageBuild?.nodes ?? []).map((instance, index) => {
+                      {(stageBuild?.nodes ?? []).map((instance, nodeIndex) => {
                         const node = nodeMap.get(instance.node_id);
-                        const issue = issueFor(result, stage.id, instance.instance_id);
                         return (
-                          <article
-                            className={`work-node ${stage.id} ${selectedInstanceId === instance.instance_id ? "selected" : ""} ${issue ? issue.severity : ""}`}
-                            key={instance.instance_id}
-                            onClick={() => setSelectedInstanceId(instance.instance_id)}
-                          >
-                            <div>
-                              <strong>{node?.name ?? instance.node_id}</strong>
-                              <small>{node?.summary ?? "节点未在库中登记"}</small>
-                            </div>
+                          <article className={`work-node ${stage.id}`} key={instance.instance_id} onClick={(event) => event.stopPropagation()}>
+                            <strong>{node?.name ?? instance.node_id}</strong>
                             <div className="node-actions">
-                              <button onClick={(event) => action(event, () => moveNode(stage.id, instance.instance_id, -1))} disabled={index === 0}>
-                                <ArrowUp size={14} />
+                              <button onClick={() => moveNode(stage.id, instance.instance_id, -1)} disabled={nodeIndex === 0} aria-label="上移">
+                                <ArrowUp size={13} />
                               </button>
-                              <button
-                                onClick={(event) => action(event, () => moveNode(stage.id, instance.instance_id, 1))}
-                                disabled={index === (stageBuild?.nodes.length ?? 0) - 1}
-                              >
-                                <ArrowDown size={14} />
+                              <button onClick={() => moveNode(stage.id, instance.instance_id, 1)} disabled={nodeIndex === (stageBuild?.nodes.length ?? 0) - 1} aria-label="下移">
+                                <ArrowDown size={13} />
                               </button>
-                              <button onClick={(event) => action(event, () => removeNode(stage.id, instance.instance_id))}>
-                                <Trash2 size={14} />
+                              <button onClick={() => removeNode(stage.id, instance.instance_id)} aria-label="删除">
+                                <Trash2 size={13} />
                               </button>
                             </div>
                           </article>
@@ -320,46 +251,21 @@ function App() {
                       })}
                     </div>
                   </section>
-                  {stageIndex < library.stages.length - 1 && <span className="stage-arrow">→</span>}
+                  {index < library.stages.length - 1 && <span className="stage-arrow">→</span>}
                 </React.Fragment>
               );
             })}
           </div>
-          <CompileOutput result={result} loading={loading} apiError={apiError} onCompile={() => compile()} />
-        </section>
 
-        <aside className="result">
-          <SectionTitle icon={<Boxes size={18} />} text="检查器" />
-          <section className={selectedDefinition ? `panel inspector ${selectedDefinition.stage}` : "panel inspector"}>
-            {selectedDefinition ? (
-              <>
-                <div className="inspector-head">
-                  <span className={`node-type ${selectedDefinition.stage}`}>{selectedStage?.name ?? selectedDefinition.stage}</span>
-                  <small>{selectedDefinition.category}</small>
-                </div>
-                <strong>{selectedDefinition.name}</strong>
-                <p>{selectedDefinition.summary}</p>
-                <InspectorSection title="输出" items={selectedDefinition.outputs} />
-                <div className="tag-row">
-                  {selectedDefinition.tags.map((tag) => (
-                    <span key={tag}>{tag}</span>
-                  ))}
-                </div>
-                <InspectorSection title="风险标签" items={selectedDefinition.risk_tags.length ? selectedDefinition.risk_tags : ["无关键风险"]} danger />
-                <div className="bias-list">
-                  {Object.entries(selectedDefinition.score_bias).map(([key, value]) => (
-                    <span key={key}>
-                      {scoreLabel(key)}
-                      <b>{value > 0 ? `+${value}` : value}</b>
-                    </span>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <p>选择一个节点查看阶段、输出、风险和评分偏置。</p>
-            )}
+          <section className="compile-output">
+            <div className="result-copy">
+              <span className={`status ${result?.status ?? "pending"}`}>{statusText(result?.status)}</span>
+              <h2>{result?.spell_name ?? "待编译法术"}</h2>
+              <p>{apiError || result?.summary || "点击步骤选择节点，完成四步后编译。"}</p>
+            </div>
+            {result && <RadarChart scores={result.radar} />}
           </section>
-        </aside>
+        </section>
       </section>
     </main>
   );
@@ -371,171 +277,62 @@ async function fetchJson<T>(path: string): Promise<T> {
   return (await response.json()) as T;
 }
 
-function cloneBuild(build: CompileRequest): CompileRequest {
-  return JSON.parse(JSON.stringify(build)) as CompileRequest;
-}
-
-function findInstance(build: CompileRequest, instanceId: string) {
-  return build.stages.flatMap((stage) => stage.nodes).find((node) => node.instance_id === instanceId);
-}
-
-function action(event: React.MouseEvent, callback: () => void) {
-  event.stopPropagation();
-  callback();
-}
-
 function outcomeFor(result: CompileResult | null, stage: StageId) {
   return result?.stage_outcomes.find((outcome) => outcome.stage === stage)?.result;
 }
 
-function issueFor(result: CompileResult | null, stage: StageId, instanceId: string) {
-  return result?.issues.find((issue) => issue.stage === stage && issue.node_instance_id === instanceId);
-}
-
 function statusText(status?: Status) {
-  if (status === "compiled") return "可编译";
+  if (status === "compiled") return "合法";
   if (status === "unsafe") return "高危";
   if (status === "failed") return "失败";
-  if (!status) return "待编译";
-  return "部分成立";
+  if (status === "partial") return "部分";
+  return "待编译";
 }
 
-function scoreLabel(key: string) {
-  const labels: Record<string, string> = {
-    power: "威力",
-    stability: "稳定",
-    learnability: "易学",
-    mana_efficiency: "效率",
-    versatility: "泛用",
-    academic_value: "学术",
-    safety: "安全",
+function RadarChart({ scores }: { scores: CompileResult["radar"] }) {
+  const center = 140;
+  const radius = 82;
+  const levels = [0.25, 0.5, 0.75, 1];
+  const points = scores.map((score, index) => pointString(pointFor(index, scores.length, center, radius * (score.value / 100)))).join(" ");
+
+  return (
+    <div className="radar-wrap">
+      <svg className="radar" viewBox="0 0 280 280" role="img" aria-label="六维雷达图">
+        {levels.map((level) => (
+          <polygon className="radar-grid" key={level} points={scores.map((_, index) => pointString(pointFor(index, scores.length, center, radius * level))).join(" ")} />
+        ))}
+        {scores.map((score, index) => {
+          const axis = pointFor(index, scores.length, center, radius);
+          const label = pointFor(index, scores.length, center, radius + 24);
+          return (
+            <g key={score.key}>
+              <line className="radar-axis" x1={center} y1={center} x2={axis.x} y2={axis.y} />
+              <text className="radar-label" x={label.x} y={label.y}>
+                {score.label}
+              </text>
+            </g>
+          );
+        })}
+        <polygon className="radar-area" points={points} />
+        {scores.map((score, index) => {
+          const point = pointFor(index, scores.length, center, radius * (score.value / 100));
+          return <circle className="radar-dot" key={score.key} cx={point.x} cy={point.y} r={3.5} />;
+        })}
+      </svg>
+    </div>
+  );
+}
+
+function pointFor(index: number, total: number, center: number, radius: number) {
+  const angle = -Math.PI / 2 + (Math.PI * 2 * index) / total;
+  return {
+    x: center + Math.cos(angle) * radius,
+    y: center + Math.sin(angle) * radius,
   };
-  return labels[key] ?? key;
 }
 
-function SectionTitle({ icon, text }: { icon: React.ReactNode; text: string }) {
-  return (
-    <div className="section-title">
-      {icon}
-      <span>{text}</span>
-    </div>
-  );
-}
-
-function Panel({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
-  return (
-    <section className="panel">
-      <h3>{title}</h3>
-      {subtitle && <small>{subtitle}</small>}
-      {children}
-    </section>
-  );
-}
-
-function ListPanel({ title, items, danger = false }: { title: string; items: string[]; danger?: boolean }) {
-  const renderedItems = items.length ? items : ["暂无"];
-  return (
-    <section className={danger ? "panel danger-list" : "panel"}>
-      <h3>{title}</h3>
-      <ul>
-        {renderedItems.map((item, index) => (
-          <li key={`${item}-${index}`}>{item}</li>
-        ))}
-      </ul>
-    </section>
-  );
-}
-
-function InspectorSection({ title, items, danger = false }: { title: string; items: string[]; danger?: boolean }) {
-  return (
-    <div className={danger ? "inspector-section danger" : "inspector-section"}>
-      <span>{title}</span>
-      <div className="tag-row">
-        {items.map((item) => (
-          <em key={item}>{item}</em>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function CompileOutput({
-  result,
-  loading,
-  apiError,
-  onCompile,
-}: {
-  result: CompileResult | null;
-  loading: boolean;
-  apiError: string;
-  onCompile: () => void;
-}) {
-  return (
-    <section className="compile-output">
-      <div className="compile-head">
-        <div>
-          <h2>编译结果</h2>
-          <p>{result ? result.summary : "等待节点库载入后执行编译。"}</p>
-        </div>
-        <div className="compile-actions">
-          <div className={`status compact ${result?.status ?? "pending"}`}>
-            {result?.status === "compiled" ? <CheckCircle2 size={17} /> : <AlertTriangle size={17} />}
-            <span>{statusText(result?.status)}</span>
-          </div>
-          <button onClick={onCompile} disabled={loading}>
-            <Play size={16} />
-            {loading ? "编译中" : "重新编译"}
-          </button>
-        </div>
-      </div>
-      {apiError && <div className="message error">{apiError}</div>}
-      {result ? (
-        <>
-          <div className="compile-grid">
-            <div className="compile-block stage-results">
-              <h3>{result.spell_name}</h3>
-              <div className="chain">
-                {result.spell_card.chain.map((item, index) => (
-                  <React.Fragment key={`${item}-${index}`}>
-                    <span>{item}</span>
-                    {index < result.spell_card.chain.length - 1 && <b>→</b>}
-                  </React.Fragment>
-                ))}
-              </div>
-              <div className="outcome-list">
-                {result.stage_outcomes.map((outcome) => (
-                  <article key={outcome.stage}>
-                    <span>{outcome.label}</span>
-                    <p>{outcome.result}</p>
-                  </article>
-                ))}
-              </div>
-            </div>
-            <div className="compile-block">
-              <h3>七维评分</h3>
-              <section className="score-grid">
-                {result.radar.map((score) => (
-                  <div className="score" key={score.key}>
-                    <span>{score.label}</span>
-                    <strong>{score.value}</strong>
-                    <meter min={0} max={100} value={score.value} />
-                  </div>
-                ))}
-              </section>
-            </div>
-          </div>
-          <div className="compile-lists">
-            <ListPanel title="问题定位" items={result.issues.map((issue) => `${issue.message}：${issue.suggestion}`)} danger={result.status !== "compiled"} />
-            <ListPanel title="成立条件" items={result.spell_card.conditions} />
-            <ListPanel title="代价" items={result.spell_card.costs} />
-            <ListPanel title="优化建议" items={result.spell_card.suggestions} />
-          </div>
-        </>
-      ) : (
-        <p className="empty-result">尚无编译结果。</p>
-      )}
-    </section>
-  );
+function pointString(point: { x: number; y: number }) {
+  return `${point.x.toFixed(2)},${point.y.toFixed(2)}`;
 }
 
 createRoot(document.getElementById("root")!).render(<App />);

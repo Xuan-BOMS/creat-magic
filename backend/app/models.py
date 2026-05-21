@@ -160,10 +160,10 @@ class CompileIssue(BaseModel):
 
 
 class RadarScore(BaseModel):
-    key: Literal["power", "stability", "learnability", "mana_efficiency", "versatility", "academic_value", "safety"]
+    key: Literal["power", "stability", "learnability", "mana_efficiency", "versatility", "academic_value"]
     label: str
     value: int = Field(ge=0, le=100)
-    direction: Literal["higher_better"] = "higher_better"
+    direction: Literal["higher_better", "higher_worse"] = "higher_better"
     reason: str
 
 

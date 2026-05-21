@@ -26,11 +26,10 @@ STAGE_LABELS: dict[StageId, str] = {
 RADAR_LABELS: dict[str, str] = {
     "power": "威力",
     "stability": "稳定性",
-    "learnability": "易学性",
-    "mana_efficiency": "魔力效率",
+    "learnability": "学习难度",
+    "mana_efficiency": "魔力消耗",
     "versatility": "泛用性",
     "academic_value": "学术价值",
-    "safety": "安全性",
 }
 BASE_SCORE = {
     "power": 48,
@@ -39,7 +38,6 @@ BASE_SCORE = {
     "mana_efficiency": 58,
     "versatility": 55,
     "academic_value": 45,
-    "safety": 64,
 }
 RISK_TEXT = {
     "thermal_spread": "热场外溢",
@@ -89,7 +87,7 @@ def compile_graph(request: CompileGraphRequest) -> CompileGraphResult:
         if risk_tags:
             issues.extend(_risk_issues(risk_tags))
         score = _apply_caster(score, request)
-        if score["safety"] < 45 or any(issue.severity == "unsafe" for issue in issues):
+        if any(issue.severity == "unsafe" for issue in issues):
             status = "unsafe"
         elif min(score["stability"], score["mana_efficiency"]) < 45:
             status = "partial"
@@ -266,15 +264,21 @@ def _apply_caster(score: dict[str, int], request: CompileGraphRequest) -> dict[s
 
 
 def _build_radar(score: dict[str, int]) -> list[RadarScore]:
-    return [
-        RadarScore(key=key, label=RADAR_LABELS[key], value=score[key], reason=_score_reason(key, score[key]))
-        for key in RADAR_LABELS
-    ]
+    radar: list[RadarScore] = []
+    for key in RADAR_LABELS:
+        value = 100 - score[key] if key in {"learnability", "mana_efficiency"} else score[key]
+        direction = "higher_worse" if key in {"learnability", "mana_efficiency"} else "higher_better"
+        radar.append(RadarScore(key=key, label=RADAR_LABELS[key], value=value, direction=direction, reason=_score_reason(key, value)))
+    return radar
 
 
 def _score_reason(key: str, value: int) -> str:
-    if key == "safety" and value < 45:
-        return "该方案存在高危外溢或治理审查标签。"
+    if key in {"learnability", "mana_efficiency"}:
+        if value >= 70:
+            return "该维度负担较高，需要优化节点组合。"
+        if value <= 40:
+            return "该维度负担较低。"
+        return "该维度处于可接受区间。"
     if value >= 70:
         return "节点组合对该维度有明显加成。"
     if value <= 40:

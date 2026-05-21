@@ -26,7 +26,8 @@ def test_compile_fireball_example() -> None:
     data = response.json()
     assert data["status"] == "compiled"
     assert data["spell_name"] == "火球术"
-    assert len(data["radar"]) == 7
+    assert len(data["radar"]) == 6
+    assert "safety" not in {score["key"] for score in data["radar"]}
     assert data["stage_outcomes"][0]["result"] == "球形弹体"
 
 
@@ -54,7 +55,8 @@ def test_compile_lightning_example_is_unsafe() -> None:
     data = response.json()
     assert data["status"] == "unsafe"
     assert data["spell_name"] == "雷电术"
-    assert any(score["key"] == "safety" and score["value"] < 45 for score in data["radar"])
+    assert len(data["radar"]) == 6
+    assert any(issue["severity"] == "unsafe" for issue in data["issues"])
 
 
 def test_compile_graph_rejects_empty_stage() -> None:
