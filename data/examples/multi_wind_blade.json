@@ -1,0 +1,12 @@
+{
+  "id": "multi_wind_blade",
+  "intent": "多目标切割",
+  "stages": [
+    {"stage": "model", "nodes": [{"instance_id": "model-1", "node_id": "model_blade"}]},
+    {"stage": "purify", "nodes": [{"instance_id": "purify-1", "node_id": "purify_wind"}]},
+    {"stage": "infuse", "nodes": [{"instance_id": "infuse-1", "node_id": "infuse_multi"}]},
+    {"stage": "release", "nodes": [{"instance_id": "release-1", "node_id": "release_flow"}]}
+  ],
+  "caster": {"focus": 75, "control": 72, "knowledge": 4},
+  "context": {"environment": "训练场"}
+}

@@ -1,0 +1,19 @@
+{
+  "id": "lightning",
+  "intent": "高能打击",
+  "stages": [
+    {"stage": "model", "nodes": [{"instance_id": "model-1", "node_id": "model_line"}]},
+    {
+      "stage": "purify",
+      "nodes": [
+        {"instance_id": "purify-1", "node_id": "purify_fire"},
+        {"instance_id": "purify-2", "node_id": "purify_wind"},
+        {"instance_id": "purify-3", "node_id": "purify_water"}
+      ]
+    },
+    {"stage": "infuse", "nodes": [{"instance_id": "infuse-1", "node_id": "infuse_compress"}]},
+    {"stage": "release", "nodes": [{"instance_id": "release-1", "node_id": "release_activate"}]}
+  ],
+  "caster": {"focus": 88, "control": 82, "knowledge": 6},
+  "context": {"environment": "战斗"}
+}

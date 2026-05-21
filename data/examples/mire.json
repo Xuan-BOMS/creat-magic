@@ -1,0 +1,18 @@
+{
+  "id": "mire",
+  "intent": "范围束缚",
+  "stages": [
+    {"stage": "model", "nodes": [{"instance_id": "model-1", "node_id": "model_area"}]},
+    {
+      "stage": "purify",
+      "nodes": [
+        {"instance_id": "purify-1", "node_id": "purify_earth"},
+        {"instance_id": "purify-2", "node_id": "purify_water"}
+      ]
+    },
+    {"stage": "infuse", "nodes": [{"instance_id": "infuse-1", "node_id": "infuse_range"}]},
+    {"stage": "release", "nodes": [{"instance_id": "release-1", "node_id": "release_diffuse"}]}
+  ],
+  "caster": {"focus": 70, "control": 68, "knowledge": 4},
+  "context": {"environment": "野外"}
+}

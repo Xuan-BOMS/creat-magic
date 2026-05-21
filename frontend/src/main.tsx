@@ -1,167 +1,139 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { Activity, AlertTriangle, BookOpen, FlaskConical, Gauge, Layers3, Play, ShieldCheck, Sparkles } from "lucide-react";
+import { AlertTriangle, ArrowDown, ArrowUp, Boxes, CheckCircle2, CirclePlus, Play, RotateCcw, Trash2 } from "lucide-react";
 import "./styles.css";
 
-type SpellLevel = {
-  tier: number;
+type StageId = "model" | "purify" | "infuse" | "release";
+type Status = "compiled" | "partial" | "failed" | "unsafe";
+
+type StageDefinition = {
+  id: StageId;
   name: string;
-  focus: string;
-  description: string;
-  steps: string[];
-  costs: string[];
-  risks: string[];
-  tags: string[];
+  purpose: string;
 };
 
-type Branch = {
+type NodeDefinition = {
   id: string;
+  stage: StageId;
   name: string;
+  category: string;
   summary: string;
-  spells: SpellLevel[];
+  outputs: string[];
+  tags: string[];
+  risk_tags: string[];
+  score_bias: Record<string, number>;
 };
 
-type ElementItem = {
-  id: string;
-  name: string;
-  color: string;
-  nature: string;
-  strength: string;
-  weakness: string;
-  build_hint: string;
-  branches: Branch[];
-};
-
-type Catalog = {
+type NodeLibrary = {
   version: string;
-  sources: string[];
-  elements: ElementItem[];
+  stages: StageDefinition[];
+  nodes: NodeDefinition[];
+};
+
+type NodeInstance = {
+  instance_id: string;
+  node_id: string;
+};
+
+type StageBuild = {
+  stage: StageId;
+  nodes: NodeInstance[];
+};
+
+type CompileRequest = {
+  id?: string;
+  intent: string;
+  stages: StageBuild[];
+  caster: {
+    focus: number;
+    control: number;
+    knowledge: number;
+  };
+  context: Record<string, string | number | boolean>;
 };
 
 type CompileResult = {
-  status: "compiled" | "partial" | "failed" | "unsafe";
-  selected_spell: SpellLevel;
-  element: ElementItem;
-  branch: Branch;
-  scores: {
-    executable: number;
-    stability: number;
-    cost: number;
-    governance: number;
-  };
-  warnings: string[];
-  errors: string[];
+  status: Status;
+  spell_name: string;
+  summary: string;
+  stage_outcomes: { stage: StageId; label: string; result: string; node_instance_ids: string[]; tags: string[] }[];
+  issues: { rule_id: string; severity: "error" | "warning" | "unsafe"; stage: StageId | null; node_instance_id: string | null; message: string; suggestion: string }[];
+  radar: { key: string; label: string; value: number; direction: "higher_better"; reason: string }[];
   spell_card: {
     title: string;
-    subtitle: string;
-    purpose: string;
+    summary: string;
     chain: string[];
     conditions: string[];
     costs: string[];
     risks: string[];
     suggestions: string[];
-    source: string;
   };
 };
 
-type FormState = {
-  elementId: string;
-  branchId: string;
-  tier: number;
-  intent: string;
-  carrier: string;
-  technique: string;
-  environment: string;
-  focus: number;
-  control: number;
-  knowledge: number;
+const API_BASE = import.meta.env.VITE_API_BASE ?? "http://127.0.0.1:8000";
+const storageKey = "spell-graph-builder-state";
+
+const fallbackBuild: CompileRequest = {
+  intent: "远程伤害",
+  stages: [
+    { stage: "model", nodes: [{ instance_id: "model-1", node_id: "model_sphere" }] },
+    { stage: "purify", nodes: [{ instance_id: "purify-1", node_id: "purify_fire" }] },
+    { stage: "infuse", nodes: [{ instance_id: "infuse-1", node_id: "infuse_standard" }] },
+    { stage: "release", nodes: [{ instance_id: "release-1", node_id: "release_projectile" }] },
+  ],
+  caster: { focus: 65, control: 60, knowledge: 2 },
+  context: { environment: "训练场" },
 };
 
-const API_BASE = import.meta.env.VITE_API_BASE ?? "http://127.0.0.1:8000";
-
-const carriers = ["手势", "咏唱", "法杖", "魔法阵", "魔石", "卷轴"];
-const techniques = ["标准", "压缩", "扩散", "延迟", "多重", "序列"];
-const environments = ["训练场", "野外", "城镇", "战斗", "结界内"];
-
 function App() {
-  const [catalog, setCatalog] = React.useState<Catalog | null>(null);
+  const [library, setLibrary] = React.useState<NodeLibrary | null>(null);
+  const [examples, setExamples] = React.useState<CompileRequest[]>([]);
+  const [build, setBuild] = React.useState<CompileRequest>(() => {
+    const saved = localStorage.getItem(storageKey);
+    return saved ? (JSON.parse(saved) as CompileRequest) : fallbackBuild;
+  });
   const [result, setResult] = React.useState<CompileResult | null>(null);
+  const [selectedInstanceId, setSelectedInstanceId] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [apiError, setApiError] = React.useState("");
-  const [form, setForm] = React.useState<FormState>(() => {
-    const saved = localStorage.getItem("spell-builder-state");
-    if (saved) {
-      return JSON.parse(saved) as FormState;
-    }
-    return {
-      elementId: "fire",
-      branchId: "fire-core",
-      tier: 1,
-      intent: "远程伤害",
-      carrier: "法杖",
-      technique: "标准",
-      environment: "训练场",
-      focus: 65,
-      control: 60,
-      knowledge: 2,
-    };
-  });
 
   React.useEffect(() => {
-    fetch(`${API_BASE}/api/catalog`)
-      .then((response) => response.json())
-      .then((data: Catalog) => {
-        setCatalog(data);
-        const element = data.elements.find((item) => item.id === form.elementId) ?? data.elements[0];
-        if (!element.branches.some((branch) => branch.id === form.branchId)) {
-          setForm((current) => ({ ...current, elementId: element.id, branchId: element.branches[0].id }));
+    Promise.all([fetchJson<NodeLibrary>("/api/nodes"), fetchJson<CompileRequest[]>("/api/examples")])
+      .then(([nodeLibrary, exampleList]) => {
+        setLibrary(nodeLibrary);
+        setExamples(exampleList);
+        if (!localStorage.getItem(storageKey) && exampleList[0]) {
+          setBuild(exampleList[0]);
         }
       })
       .catch(() => setApiError("无法连接后端 API，请确认 uvicorn 已在 127.0.0.1:8000 运行。"));
   }, []);
 
   React.useEffect(() => {
-    localStorage.setItem("spell-builder-state", JSON.stringify(form));
-  }, [form]);
+    localStorage.setItem(storageKey, JSON.stringify(build));
+  }, [build]);
 
-  const selectedElement = catalog?.elements.find((item) => item.id === form.elementId) ?? catalog?.elements[0];
-  const selectedBranch = selectedElement?.branches.find((item) => item.id === form.branchId) ?? selectedElement?.branches[0];
-  const selectedSpell = selectedBranch?.spells.find((spell) => spell.tier === form.tier) ?? selectedBranch?.spells[0];
+  React.useEffect(() => {
+    if (library && !result) {
+      void compile(build);
+    }
+  }, [library]);
 
-  function updateField<K extends keyof FormState>(key: K, value: FormState[K]) {
-    setForm((current) => ({ ...current, [key]: value }));
-  }
+  const nodeMap = React.useMemo(() => new Map(library?.nodes.map((node) => [node.id, node]) ?? []), [library]);
+  const selectedNode = findInstance(build, selectedInstanceId);
+  const selectedDefinition = selectedNode ? nodeMap.get(selectedNode.node_id) : null;
+  const selectedStage = selectedDefinition ? library?.stages.find((stage) => stage.id === selectedDefinition.stage) : null;
 
-  function chooseElement(element: ElementItem) {
-    setForm((current) => ({
-      ...current,
-      elementId: element.id,
-      branchId: element.branches[0].id,
-      tier: Math.min(current.tier, 10),
-    }));
-  }
-
-  async function compile() {
+  async function compile(current = build) {
     setLoading(true);
     setApiError("");
     try {
-      const response = await fetch(`${API_BASE}/api/compile`, {
+      const response = await fetch(`${API_BASE}/api/compile-graph`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          element_id: form.elementId,
-          branch_id: form.branchId,
-          tier: form.tier,
-          intent: form.intent,
-          carrier: form.carrier,
-          technique: form.technique,
-          environment: form.environment,
-          caster: { focus: form.focus, control: form.control, knowledge: form.knowledge },
-        }),
+        body: JSON.stringify(current),
       });
-      if (!response.ok) {
-        throw new Error(await response.text());
-      }
+      if (!response.ok) throw new Error(await response.text());
       setResult((await response.json()) as CompileResult);
     } catch (error) {
       setApiError(error instanceof Error ? error.message : "编译请求失败。");
@@ -170,17 +142,60 @@ function App() {
     }
   }
 
-  React.useEffect(() => {
-    if (catalog && !result) {
-      void compile();
-    }
-  }, [catalog]);
+  function loadExample(example: CompileRequest) {
+    const next = cloneBuild(example);
+    setBuild(next);
+    setSelectedInstanceId("");
+    void compile(next);
+  }
 
-  if (!catalog || !selectedElement || !selectedBranch || !selectedSpell) {
+  function updateIntent(intent: string) {
+    setBuild((current) => ({ ...current, intent }));
+  }
+
+  function updateCaster(key: keyof CompileRequest["caster"], value: number) {
+    setBuild((current) => ({ ...current, caster: { ...current.caster, [key]: value } }));
+  }
+
+  function addNode(node: NodeDefinition) {
+    const instance: NodeInstance = { instance_id: `${node.stage}-${Date.now()}`, node_id: node.id };
+    setBuild((current) => ({
+      ...current,
+      stages: current.stages.map((stage) => (stage.stage === node.stage ? { ...stage, nodes: [...stage.nodes, instance] } : stage)),
+    }));
+    setSelectedInstanceId(instance.instance_id);
+  }
+
+  function moveNode(stageId: StageId, instanceId: string, direction: -1 | 1) {
+    setBuild((current) => ({
+      ...current,
+      stages: current.stages.map((stage) => {
+        if (stage.stage !== stageId) return stage;
+        const index = stage.nodes.findIndex((node) => node.instance_id === instanceId);
+        const target = index + direction;
+        if (index < 0 || target < 0 || target >= stage.nodes.length) return stage;
+        const nodes = [...stage.nodes];
+        [nodes[index], nodes[target]] = [nodes[target], nodes[index]];
+        return { ...stage, nodes };
+      }),
+    }));
+  }
+
+  function removeNode(stageId: StageId, instanceId: string) {
+    setBuild((current) => ({
+      ...current,
+      stages: current.stages.map((stage) =>
+        stage.stage === stageId ? { ...stage, nodes: stage.nodes.filter((node) => node.instance_id !== instanceId) } : stage,
+      ),
+    }));
+    if (selectedInstanceId === instanceId) setSelectedInstanceId("");
+  }
+
+  if (!library) {
     return (
       <main className="loading">
-        <Sparkles size={28} />
-        <span>正在载入法术刻度</span>
+        <Boxes size={28} />
+        <span>正在载入节点库</span>
         {apiError && <strong>{apiError}</strong>}
       </main>
     );
@@ -194,8 +209,8 @@ function App() {
           <h1>法术生成器</h1>
         </div>
         <div className="topbar-actions">
-          <span>节点库 {catalog.version}</span>
-          <button onClick={compile} disabled={loading}>
+          <span>节点库 {library.version}</span>
+          <button onClick={() => compile()} disabled={loading}>
             <Play size={17} />
             {loading ? "编译中" : "编译"}
           </button>
@@ -204,165 +219,205 @@ function App() {
 
       <section className="workspace">
         <aside className="palette">
-          <div className="section-title">
-            <Layers3 size={18} />
-            <span>元素</span>
+          <SectionTitle icon={<Boxes size={18} />} text="节点库" />
+          <div className="field">
+            <label>施法意图</label>
+            <input value={build.intent} onChange={(event) => updateIntent(event.target.value)} />
           </div>
-          <div className="element-list">
-            {catalog.elements.map((element) => (
-              <button
-                className={element.id === form.elementId ? "element active" : "element"}
-                key={element.id}
-                onClick={() => chooseElement(element)}
-                style={{ "--accent": element.color } as React.CSSProperties}
-              >
-                <strong>{element.name}</strong>
-                <small>{element.nature}</small>
+          <div className="caster-grid">
+            <label>
+              专注
+              <input type="range" min={0} max={100} value={build.caster.focus} onChange={(event) => updateCaster("focus", Number(event.target.value))} />
+              <span>{build.caster.focus}</span>
+            </label>
+            <label>
+              控制
+              <input type="range" min={0} max={100} value={build.caster.control} onChange={(event) => updateCaster("control", Number(event.target.value))} />
+              <span>{build.caster.control}</span>
+            </label>
+            <label>
+              学识
+              <input
+                type="range"
+                min={0}
+                max={10}
+                value={build.caster.knowledge}
+                onChange={(event) => updateCaster("knowledge", Number(event.target.value))}
+              />
+              <span>{build.caster.knowledge}</span>
+            </label>
+          </div>
+          <div className="example-list">
+            {examples.map((example) => (
+              <button key={example.id} onClick={() => loadExample(example)}>
+                <RotateCcw size={14} />
+                {example.id}
               </button>
             ))}
           </div>
-          <div className="field">
-            <label>以太分支</label>
-            <select value={form.branchId} onChange={(event) => updateField("branchId", event.target.value)}>
-              {selectedElement.branches.map((branch) => (
-                <option key={branch.id} value={branch.id}>
-                  {branch.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="field">
-            <label>意图</label>
-            <input value={form.intent} onChange={(event) => updateField("intent", event.target.value)} />
-          </div>
+          {library.stages.map((stage) => (
+            <section className="node-group" key={stage.id}>
+              <h2>{stage.name}</h2>
+              <p>{stage.purpose}</p>
+              <div className="node-list">
+                {library.nodes
+                  .filter((node) => node.stage === stage.id)
+                  .map((node) => (
+                    <button className={`library-node ${node.stage}`} key={node.id} onClick={() => addNode(node)}>
+                      <CirclePlus size={15} />
+                      <span>{node.name}</span>
+                    </button>
+                  ))}
+              </div>
+            </section>
+          ))}
         </aside>
 
         <section className="builder">
-          <div className="builder-head">
-            <div>
-              <p>{selectedBranch.name}</p>
-              <h2>{selectedSpell.name}</h2>
-            </div>
-            <span className="tier">第 {selectedSpell.tier} 阶</span>
+          <div className="stage-flow">
+            {library.stages.map((stage, stageIndex) => {
+              const stageBuild = build.stages.find((item) => item.stage === stage.id);
+              return (
+                <React.Fragment key={stage.id}>
+                  <section className={`stage-column ${stage.id}`}>
+                    <div className="stage-head">
+                      <span>{stageIndex + 1}</span>
+                      <div>
+                        <h2>{stage.name}</h2>
+                        <p>{outcomeFor(result, stage.id) ?? stage.purpose}</p>
+                      </div>
+                    </div>
+                    <div className="stage-nodes">
+                      {(stageBuild?.nodes ?? []).map((instance, index) => {
+                        const node = nodeMap.get(instance.node_id);
+                        const issue = issueFor(result, stage.id, instance.instance_id);
+                        return (
+                          <article
+                            className={`work-node ${stage.id} ${selectedInstanceId === instance.instance_id ? "selected" : ""} ${issue ? issue.severity : ""}`}
+                            key={instance.instance_id}
+                            onClick={() => setSelectedInstanceId(instance.instance_id)}
+                          >
+                            <div>
+                              <strong>{node?.name ?? instance.node_id}</strong>
+                              <small>{node?.summary ?? "节点未在库中登记"}</small>
+                            </div>
+                            <div className="node-actions">
+                              <button onClick={(event) => action(event, () => moveNode(stage.id, instance.instance_id, -1))} disabled={index === 0}>
+                                <ArrowUp size={14} />
+                              </button>
+                              <button
+                                onClick={(event) => action(event, () => moveNode(stage.id, instance.instance_id, 1))}
+                                disabled={index === (stageBuild?.nodes.length ?? 0) - 1}
+                              >
+                                <ArrowDown size={14} />
+                              </button>
+                              <button onClick={(event) => action(event, () => removeNode(stage.id, instance.instance_id))}>
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          </article>
+                        );
+                      })}
+                    </div>
+                  </section>
+                  {stageIndex < library.stages.length - 1 && <span className="stage-arrow">→</span>}
+                </React.Fragment>
+              );
+            })}
           </div>
-
-          <div className="tier-grid">
-            {selectedBranch.spells.map((spell) => (
-              <button
-                key={spell.tier}
-                className={spell.tier === form.tier ? "spell active" : "spell"}
-                onClick={() => updateField("tier", spell.tier)}
-              >
-                <span>{spell.tier}</span>
-                <strong>{spell.name}</strong>
-                <small>{spell.focus}</small>
-              </button>
-            ))}
-          </div>
-
-          <div className="spell-detail">
-            <div>
-              <div className="section-title">
-                <BookOpen size={18} />
-                <span>刻度说明</span>
-              </div>
-              <p>{selectedSpell.description}</p>
-            </div>
-            <div className="tag-row">
-              {selectedSpell.tags.map((tag) => (
-                <span key={tag}>{tag}</span>
-              ))}
-            </div>
-          </div>
-
-          <div className="controls">
-            <SelectField label="载体" value={form.carrier} values={carriers} onChange={(value) => updateField("carrier", value)} />
-            <SelectField label="技巧" value={form.technique} values={techniques} onChange={(value) => updateField("technique", value)} />
-            <SelectField label="环境" value={form.environment} values={environments} onChange={(value) => updateField("environment", value)} />
-          </div>
-
-          <div className="sliders">
-            <Slider label="精神力" value={form.focus} onChange={(value) => updateField("focus", value)} />
-            <Slider label="控制力" value={form.control} onChange={(value) => updateField("control", value)} />
-            <Slider label="知识刻度" value={form.knowledge} max={10} onChange={(value) => updateField("knowledge", value)} />
-          </div>
-
-          <div className="chain">
-            {(result?.spell_card.chain ?? [form.intent, selectedElement.name, selectedBranch.name, selectedSpell.name]).map((item, index) => (
-              <React.Fragment key={`${item}-${index}`}>
-                <span>{item}</span>
-                {index < (result?.spell_card.chain.length ?? 4) - 1 && <b>→</b>}
-              </React.Fragment>
-            ))}
-          </div>
+          <CompileOutput result={result} loading={loading} apiError={apiError} onCompile={() => compile()} />
         </section>
 
         <aside className="result">
-          <div className={`status ${result?.status ?? "compiled"}`}>
-            <ShieldCheck size={19} />
-            <span>{statusText(result?.status)}</span>
-          </div>
-          {apiError && <div className="message error">{apiError}</div>}
-          {result && (
-            <>
-              <div className="score-grid">
-                <Score label="可执行" value={result.scores.executable} icon={<Activity size={16} />} />
-                <Score label="稳定" value={result.scores.stability} icon={<Gauge size={16} />} />
-                <Score label="代价" value={result.scores.cost} icon={<FlaskConical size={16} />} />
-                <Score label="治理" value={result.scores.governance} icon={<AlertTriangle size={16} />} />
-              </div>
-
-              <Panel title={result.spell_card.title} subtitle={result.spell_card.subtitle}>
-                <p>{result.spell_card.purpose}</p>
-              </Panel>
-              <ListPanel title="成立条件" items={result.spell_card.conditions} />
-              <ListPanel title="代价" items={result.spell_card.costs} />
-              <ListPanel title="风险" items={result.spell_card.risks} danger />
-              <ListPanel title="优化建议" items={result.spell_card.suggestions} />
-            </>
-          )}
+          <SectionTitle icon={<Boxes size={18} />} text="检查器" />
+          <section className={selectedDefinition ? `panel inspector ${selectedDefinition.stage}` : "panel inspector"}>
+            {selectedDefinition ? (
+              <>
+                <div className="inspector-head">
+                  <span className={`node-type ${selectedDefinition.stage}`}>{selectedStage?.name ?? selectedDefinition.stage}</span>
+                  <small>{selectedDefinition.category}</small>
+                </div>
+                <strong>{selectedDefinition.name}</strong>
+                <p>{selectedDefinition.summary}</p>
+                <InspectorSection title="输出" items={selectedDefinition.outputs} />
+                <div className="tag-row">
+                  {selectedDefinition.tags.map((tag) => (
+                    <span key={tag}>{tag}</span>
+                  ))}
+                </div>
+                <InspectorSection title="风险标签" items={selectedDefinition.risk_tags.length ? selectedDefinition.risk_tags : ["无关键风险"]} danger />
+                <div className="bias-list">
+                  {Object.entries(selectedDefinition.score_bias).map(([key, value]) => (
+                    <span key={key}>
+                      {scoreLabel(key)}
+                      <b>{value > 0 ? `+${value}` : value}</b>
+                    </span>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <p>选择一个节点查看阶段、输出、风险和评分偏置。</p>
+            )}
+          </section>
         </aside>
       </section>
     </main>
   );
 }
 
-function SelectField({ label, value, values, onChange }: { label: string; value: string; values: string[]; onChange: (value: string) => void }) {
-  return (
-    <div className="field">
-      <label>{label}</label>
-      <select value={value} onChange={(event) => onChange(event.target.value)}>
-        {values.map((item) => (
-          <option key={item} value={item}>
-            {item}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
+async function fetchJson<T>(path: string): Promise<T> {
+  const response = await fetch(`${API_BASE}${path}`);
+  if (!response.ok) throw new Error(await response.text());
+  return (await response.json()) as T;
 }
 
-function Slider({ label, value, max = 100, onChange }: { label: string; value: number; max?: number; onChange: (value: number) => void }) {
-  return (
-    <label className="slider">
-      <span>
-        {label}
-        <b>{value}</b>
-      </span>
-      <input type="range" min={0} max={max} value={value} onChange={(event) => onChange(Number(event.target.value))} />
-    </label>
-  );
+function cloneBuild(build: CompileRequest): CompileRequest {
+  return JSON.parse(JSON.stringify(build)) as CompileRequest;
 }
 
-function Score({ label, value, icon }: { label: string; value: number; icon: React.ReactNode }) {
+function findInstance(build: CompileRequest, instanceId: string) {
+  return build.stages.flatMap((stage) => stage.nodes).find((node) => node.instance_id === instanceId);
+}
+
+function action(event: React.MouseEvent, callback: () => void) {
+  event.stopPropagation();
+  callback();
+}
+
+function outcomeFor(result: CompileResult | null, stage: StageId) {
+  return result?.stage_outcomes.find((outcome) => outcome.stage === stage)?.result;
+}
+
+function issueFor(result: CompileResult | null, stage: StageId, instanceId: string) {
+  return result?.issues.find((issue) => issue.stage === stage && issue.node_instance_id === instanceId);
+}
+
+function statusText(status?: Status) {
+  if (status === "compiled") return "可编译";
+  if (status === "unsafe") return "高危";
+  if (status === "failed") return "失败";
+  if (!status) return "待编译";
+  return "部分成立";
+}
+
+function scoreLabel(key: string) {
+  const labels: Record<string, string> = {
+    power: "威力",
+    stability: "稳定",
+    learnability: "易学",
+    mana_efficiency: "效率",
+    versatility: "泛用",
+    academic_value: "学术",
+    safety: "安全",
+  };
+  return labels[key] ?? key;
+}
+
+function SectionTitle({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
-    <div className="score">
-      <span>
-        {icon}
-        {label}
-      </span>
-      <strong>{value}</strong>
-      <meter min={0} max={100} value={value} />
+    <div className="section-title">
+      {icon}
+      <span>{text}</span>
     </div>
   );
 }
@@ -378,11 +433,12 @@ function Panel({ title, subtitle, children }: { title: string; subtitle?: string
 }
 
 function ListPanel({ title, items, danger = false }: { title: string; items: string[]; danger?: boolean }) {
+  const renderedItems = items.length ? items : ["暂无"];
   return (
     <section className={danger ? "panel danger-list" : "panel"}>
       <h3>{title}</h3>
       <ul>
-        {items.map((item, index) => (
+        {renderedItems.map((item, index) => (
           <li key={`${item}-${index}`}>{item}</li>
         ))}
       </ul>
@@ -390,11 +446,96 @@ function ListPanel({ title, items, danger = false }: { title: string; items: str
   );
 }
 
-function statusText(status?: CompileResult["status"]) {
-  if (status === "failed") return "失败";
-  if (status === "unsafe") return "高危";
-  if (status === "partial") return "部分成立";
-  return "可编译";
+function InspectorSection({ title, items, danger = false }: { title: string; items: string[]; danger?: boolean }) {
+  return (
+    <div className={danger ? "inspector-section danger" : "inspector-section"}>
+      <span>{title}</span>
+      <div className="tag-row">
+        {items.map((item) => (
+          <em key={item}>{item}</em>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function CompileOutput({
+  result,
+  loading,
+  apiError,
+  onCompile,
+}: {
+  result: CompileResult | null;
+  loading: boolean;
+  apiError: string;
+  onCompile: () => void;
+}) {
+  return (
+    <section className="compile-output">
+      <div className="compile-head">
+        <div>
+          <h2>编译结果</h2>
+          <p>{result ? result.summary : "等待节点库载入后执行编译。"}</p>
+        </div>
+        <div className="compile-actions">
+          <div className={`status compact ${result?.status ?? "pending"}`}>
+            {result?.status === "compiled" ? <CheckCircle2 size={17} /> : <AlertTriangle size={17} />}
+            <span>{statusText(result?.status)}</span>
+          </div>
+          <button onClick={onCompile} disabled={loading}>
+            <Play size={16} />
+            {loading ? "编译中" : "重新编译"}
+          </button>
+        </div>
+      </div>
+      {apiError && <div className="message error">{apiError}</div>}
+      {result ? (
+        <>
+          <div className="compile-grid">
+            <div className="compile-block stage-results">
+              <h3>{result.spell_name}</h3>
+              <div className="chain">
+                {result.spell_card.chain.map((item, index) => (
+                  <React.Fragment key={`${item}-${index}`}>
+                    <span>{item}</span>
+                    {index < result.spell_card.chain.length - 1 && <b>→</b>}
+                  </React.Fragment>
+                ))}
+              </div>
+              <div className="outcome-list">
+                {result.stage_outcomes.map((outcome) => (
+                  <article key={outcome.stage}>
+                    <span>{outcome.label}</span>
+                    <p>{outcome.result}</p>
+                  </article>
+                ))}
+              </div>
+            </div>
+            <div className="compile-block">
+              <h3>七维评分</h3>
+              <section className="score-grid">
+                {result.radar.map((score) => (
+                  <div className="score" key={score.key}>
+                    <span>{score.label}</span>
+                    <strong>{score.value}</strong>
+                    <meter min={0} max={100} value={score.value} />
+                  </div>
+                ))}
+              </section>
+            </div>
+          </div>
+          <div className="compile-lists">
+            <ListPanel title="问题定位" items={result.issues.map((issue) => `${issue.message}：${issue.suggestion}`)} danger={result.status !== "compiled"} />
+            <ListPanel title="成立条件" items={result.spell_card.conditions} />
+            <ListPanel title="代价" items={result.spell_card.costs} />
+            <ListPanel title="优化建议" items={result.spell_card.suggestions} />
+          </div>
+        </>
+      ) : (
+        <p className="empty-result">尚无编译结果。</p>
+      )}
+    </section>
+  );
 }
 
 createRoot(document.getElementById("root")!).render(<App />);

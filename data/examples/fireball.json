@@ -1,0 +1,12 @@
+{
+  "id": "fireball",
+  "intent": "远程伤害",
+  "stages": [
+    {"stage": "model", "nodes": [{"instance_id": "model-1", "node_id": "model_sphere"}]},
+    {"stage": "purify", "nodes": [{"instance_id": "purify-1", "node_id": "purify_fire"}]},
+    {"stage": "infuse", "nodes": [{"instance_id": "infuse-1", "node_id": "infuse_standard"}]},
+    {"stage": "release", "nodes": [{"instance_id": "release-1", "node_id": "release_projectile"}]}
+  ],
+  "caster": {"focus": 65, "control": 60, "knowledge": 2},
+  "context": {"environment": "训练场"}
+}

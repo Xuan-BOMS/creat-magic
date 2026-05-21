@@ -1,0 +1,265 @@
+{
+  "version": "mvp-0.1",
+  "stages": [
+    {
+      "id": "model",
+      "name": "开模",
+      "purpose": "建立可承载后续提纯与灌注的形态。"
+    },
+    {
+      "id": "purify",
+      "name": "提纯",
+      "purpose": "决定法术使用的元素或复合属性。"
+    },
+    {
+      "id": "infuse",
+      "name": "灌注",
+      "purpose": "将提纯结果注入开模结构。"
+    },
+    {
+      "id": "release",
+      "name": "释放",
+      "purpose": "使已完成的法术结构产生预期效果。"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "model_sphere",
+      "stage": "model",
+      "name": "球形",
+      "category": "shape",
+      "summary": "形成可投射的球形弹体模具。",
+      "outputs": ["sphere", "projectile"],
+      "tags": ["弹体"],
+      "risk_tags": [],
+      "score_bias": {"power": 4, "stability": 8, "learnability": 8, "mana_efficiency": 4, "versatility": 8, "academic_value": 2, "safety": 6}
+    },
+    {
+      "id": "model_blade",
+      "stage": "model",
+      "name": "刃形",
+      "category": "shape",
+      "summary": "形成薄刃结构，适合切割类释放。",
+      "outputs": ["blade"],
+      "tags": ["刃", "切割"],
+      "risk_tags": ["edge_control"],
+      "score_bias": {"power": 8, "stability": 2, "learnability": 2, "mana_efficiency": 4, "versatility": 4, "academic_value": 4, "safety": 0}
+    },
+    {
+      "id": "model_area",
+      "stage": "model",
+      "name": "范围",
+      "category": "shape",
+      "summary": "在指定位置建立范围模具。",
+      "outputs": ["area"],
+      "tags": ["场域"],
+      "risk_tags": ["area_spill"],
+      "score_bias": {"power": 6, "stability": -4, "learnability": -2, "mana_efficiency": -2, "versatility": 6, "academic_value": 5, "safety": -4}
+    },
+    {
+      "id": "model_line",
+      "stage": "model",
+      "name": "线形",
+      "category": "shape",
+      "summary": "形成线性或束状的作用路径。",
+      "outputs": ["line"],
+      "tags": ["线形"],
+      "risk_tags": [],
+      "score_bias": {"power": 5, "stability": 5, "learnability": 4, "mana_efficiency": 4, "versatility": 5, "academic_value": 3, "safety": 4}
+    },
+    {
+      "id": "model_wall",
+      "stage": "model",
+      "name": "墙体",
+      "category": "shape",
+      "summary": "建立墙体或屏障模具。",
+      "outputs": ["wall"],
+      "tags": ["壁", "防御"],
+      "risk_tags": ["block_path"],
+      "score_bias": {"power": 1, "stability": 8, "learnability": 3, "mana_efficiency": 2, "versatility": 5, "academic_value": 3, "safety": 5}
+    },
+    {
+      "id": "purify_fire",
+      "stage": "purify",
+      "name": "火",
+      "category": "element",
+      "summary": "提纯释放、升温、燃烧与扩散倾向。",
+      "outputs": ["fire"],
+      "tags": ["火"],
+      "risk_tags": ["thermal_spread"],
+      "score_bias": {"power": 10, "stability": -2, "learnability": 7, "mana_efficiency": 3, "versatility": 5, "academic_value": 4, "safety": -8}
+    },
+    {
+      "id": "purify_water",
+      "stage": "purify",
+      "name": "水",
+      "category": "element",
+      "summary": "提纯流动、液态、湿度与卸力倾向。",
+      "outputs": ["water"],
+      "tags": ["水"],
+      "risk_tags": ["slip", "conductive_context"],
+      "score_bias": {"power": 3, "stability": 5, "learnability": 6, "mana_efficiency": 5, "versatility": 7, "academic_value": 4, "safety": 4}
+    },
+    {
+      "id": "purify_wind",
+      "stage": "purify",
+      "name": "风",
+      "category": "element",
+      "summary": "提纯运动、气压、切割和扰动倾向。",
+      "outputs": ["wind"],
+      "tags": ["风"],
+      "risk_tags": ["drift"],
+      "score_bias": {"power": 6, "stability": -3, "learnability": 3, "mana_efficiency": 6, "versatility": 7, "academic_value": 5, "safety": -2}
+    },
+    {
+      "id": "purify_earth",
+      "stage": "purify",
+      "name": "土",
+      "category": "element",
+      "summary": "提纯结构、固化、密度与承载倾向。",
+      "outputs": ["earth"],
+      "tags": ["土"],
+      "risk_tags": ["terrain_damage"],
+      "score_bias": {"power": 6, "stability": 8, "learnability": 4, "mana_efficiency": -2, "versatility": 5, "academic_value": 4, "safety": 2}
+    },
+    {
+      "id": "purify_ether",
+      "stage": "purify",
+      "name": "以太操作",
+      "category": "element",
+      "summary": "提纯精神力与矢量控制接口。",
+      "outputs": ["ether"],
+      "tags": ["以太", "操作"],
+      "risk_tags": ["cognitive_load"],
+      "score_bias": {"power": 4, "stability": -5, "learnability": -8, "mana_efficiency": -5, "versatility": 10, "academic_value": 9, "safety": -8}
+    },
+    {
+      "id": "infuse_standard",
+      "stage": "infuse",
+      "name": "标准灌注",
+      "category": "infusion",
+      "summary": "将提纯结果稳定注入模具。",
+      "outputs": ["infusion"],
+      "tags": ["标准"],
+      "risk_tags": [],
+      "score_bias": {"power": 3, "stability": 8, "learnability": 8, "mana_efficiency": 6, "versatility": 7, "academic_value": 2, "safety": 6}
+    },
+    {
+      "id": "infuse_compress",
+      "stage": "infuse",
+      "name": "压缩灌注",
+      "category": "infusion",
+      "summary": "将大量元素压入较小模具，提高密度和爆发。",
+      "outputs": ["infusion", "compressed"],
+      "tags": ["压缩"],
+      "risk_tags": ["overpressure"],
+      "score_bias": {"power": 10, "stability": -7, "learnability": -4, "mana_efficiency": -6, "versatility": 3, "academic_value": 5, "safety": -8}
+    },
+    {
+      "id": "infuse_range",
+      "stage": "infuse",
+      "name": "范围灌注",
+      "category": "infusion",
+      "summary": "将大量元素铺入指定范围。",
+      "outputs": ["infusion", "area_filled"],
+      "tags": ["范围"],
+      "risk_tags": ["area_spill"],
+      "score_bias": {"power": 8, "stability": -5, "learnability": -3, "mana_efficiency": -3, "versatility": 6, "academic_value": 6, "safety": -6}
+    },
+    {
+      "id": "infuse_multi",
+      "stage": "infuse",
+      "name": "多重灌注",
+      "category": "infusion",
+      "summary": "并行灌注多个同类窗口，形成多重输出。",
+      "outputs": ["infusion", "multi"],
+      "tags": ["多重"],
+      "risk_tags": ["attention_parallel"],
+      "score_bias": {"power": 8, "stability": -9, "learnability": -7, "mana_efficiency": -8, "versatility": 6, "academic_value": 7, "safety": -7}
+    },
+    {
+      "id": "release_projectile",
+      "stage": "release",
+      "name": "投射释放",
+      "category": "release",
+      "summary": "将完成的法术结构打出或甩出。",
+      "outputs": ["effect"],
+      "tags": ["投射"],
+      "risk_tags": ["miss"],
+      "score_bias": {"power": 5, "stability": 5, "learnability": 8, "mana_efficiency": 5, "versatility": 6, "academic_value": 2, "safety": 4}
+    },
+    {
+      "id": "release_activate",
+      "stage": "release",
+      "name": "激发释放",
+      "category": "release",
+      "summary": "在合适时机激发压缩内容。",
+      "outputs": ["effect"],
+      "tags": ["激发"],
+      "risk_tags": ["burst"],
+      "score_bias": {"power": 9, "stability": -5, "learnability": -4, "mana_efficiency": -3, "versatility": 4, "academic_value": 5, "safety": -8}
+    },
+    {
+      "id": "release_diffuse",
+      "stage": "release",
+      "name": "扩散释放",
+      "category": "release",
+      "summary": "使法术命中或出手后覆盖范围。",
+      "outputs": ["effect"],
+      "tags": ["扩散"],
+      "risk_tags": ["area_spill"],
+      "score_bias": {"power": 7, "stability": -7, "learnability": -4, "mana_efficiency": -3, "versatility": 6, "academic_value": 6, "safety": -6}
+    },
+    {
+      "id": "release_flow",
+      "stage": "release",
+      "name": "流动释放",
+      "category": "release",
+      "summary": "让气流或水流保持运动并持续作用。",
+      "outputs": ["effect"],
+      "tags": ["流动"],
+      "risk_tags": ["drift"],
+      "score_bias": {"power": 5, "stability": 1, "learnability": 2, "mana_efficiency": 4, "versatility": 7, "academic_value": 5, "safety": 1}
+    },
+    {
+      "id": "release_field",
+      "stage": "release",
+      "name": "场域释放",
+      "category": "release",
+      "summary": "在范围内持续释放并维持作用。",
+      "outputs": ["effect"],
+      "tags": ["场域"],
+      "risk_tags": ["area_spill", "governance_review"],
+      "score_bias": {"power": 8, "stability": -6, "learnability": -6, "mana_efficiency": -9, "versatility": 5, "academic_value": 8, "safety": -14}
+    }
+  ],
+  "compounds": [
+    {
+      "primary": "fire",
+      "secondary": "wind",
+      "catalyst": "water",
+      "result": "雷电系法术",
+      "form": "激发",
+      "risk_tags": ["high_voltage", "governance_review"],
+      "score_bias": {"power": 14, "stability": -12, "learnability": -10, "mana_efficiency": -10, "versatility": 5, "academic_value": 10, "safety": -24}
+    },
+    {
+      "primary": "earth",
+      "secondary": "water",
+      "catalyst": null,
+      "result": "泥沼系法术",
+      "form": "混合",
+      "risk_tags": ["terrain_damage"],
+      "score_bias": {"power": 5, "stability": 4, "learnability": -2, "mana_efficiency": -1, "versatility": 8, "academic_value": 7, "safety": -2}
+    },
+    {
+      "primary": "water",
+      "secondary": "earth",
+      "catalyst": null,
+      "result": "泥沼系法术",
+      "form": "混合",
+      "risk_tags": ["terrain_damage"],
+      "score_bias": {"power": 5, "stability": 4, "learnability": -2, "mana_efficiency": -1, "versatility": 8, "academic_value": 7, "safety": -2}
+    }
+  ]
+}

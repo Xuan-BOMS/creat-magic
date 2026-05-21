@@ -1,0 +1,337 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900">
+  <defs>
+    <style>
+      .bg { fill: #f4f2eb; }
+      .top { fill: #111820; }
+      .panel { fill: #fffdf8; stroke: #d8d2c4; stroke-width: 1; }
+      .panel-soft { fill: #f9f7f0; stroke: #d8d2c4; stroke-width: 1; }
+      .canvas { fill: #fbfaf5; stroke: #cfc7b8; stroke-width: 1; }
+      .muted { fill: #706b61; }
+      .text { fill: #1d252c; font-family: "Microsoft YaHei", "Segoe UI", sans-serif; }
+      .inverse { fill: #f9f7f0; font-family: "Microsoft YaHei", "Segoe UI", sans-serif; }
+      .small { font-size: 12px; }
+      .body { font-size: 14px; }
+      .label { font-size: 13px; font-weight: 600; }
+      .title { font-size: 20px; font-weight: 700; }
+      .section { font-size: 15px; font-weight: 700; }
+      .chip { fill: #ede8dc; stroke: #d5cdbc; stroke-width: 1; }
+      .chip-active { fill: #1f6f68; }
+      .btn { fill: #26313a; stroke: #3c4a55; stroke-width: 1; }
+      .btn-primary { fill: #c8762c; }
+      .intent { fill: #eaf5ef; stroke: #2f8d62; }
+      .medium { fill: #fff0e8; stroke: #c9562f; }
+      .operation { fill: #ebf3f5; stroke: #347f8c; }
+      .structure { fill: #fff5d9; stroke: #b8861f; }
+      .carrier { fill: #eff1f8; stroke: #6474a8; }
+      .constraint { fill: #f6edf5; stroke: #9b4d83; }
+      .warning { fill: #fff2d6; stroke: #b97816; }
+      .danger { fill: #ffe9e6; stroke: #c94a3b; }
+      .ok { fill: #e6f4ee; stroke: #2d8a60; }
+      .line { stroke: #5a6470; stroke-width: 2.5; fill: none; }
+      .line-soft { stroke: #9aa3aa; stroke-width: 1.8; fill: none; stroke-dasharray: 5 5; }
+      .grid { stroke: #e8e3d8; stroke-width: 1; }
+      .shadow { filter: drop-shadow(0 8px 18px rgba(28, 36, 42, 0.10)); }
+      .bar-bg { fill: #ebe5d9; }
+      .bar-ok { fill: #2d8a60; }
+      .bar-mid { fill: #c8762c; }
+      .bar-warn { fill: #b84f40; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5a6470" />
+    </marker>
+    <pattern id="canvas-grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M 28 0 L 0 0 0 28" class="grid" fill="none" />
+    </pattern>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1440" height="900" />
+
+  <rect class="top" x="0" y="0" width="1440" height="64" />
+  <text class="inverse title" x="24" y="28">轰界法术生成器</text>
+  <text class="inverse small" x="24" y="47" opacity="0.72">法术编译器工作台</text>
+
+  <rect class="btn" x="246" y="16" width="136" height="32" rx="6" />
+  <text class="inverse body" x="264" y="37">火球术草案</text>
+  <rect class="btn" x="394" y="16" width="118" height="32" rx="6" />
+  <text class="inverse body" x="410" y="37">节点库 v0.1</text>
+
+  <rect class="btn" x="906" y="16" width="36" height="32" rx="6" />
+  <text class="inverse body" x="918" y="37">↶</text>
+  <rect class="btn" x="950" y="16" width="36" height="32" rx="6" />
+  <text class="inverse body" x="962" y="37">↷</text>
+  <rect class="btn" x="998" y="16" width="86" height="32" rx="6" />
+  <text class="inverse body" x="1018" y="37">适配画布</text>
+  <rect class="btn" x="1094" y="16" width="72" height="32" rx="6" />
+  <text class="inverse body" x="1114" y="37">保存</text>
+  <rect class="btn" x="1176" y="16" width="84" height="32" rx="6" />
+  <text class="inverse body" x="1194" y="37">示例</text>
+  <rect class="btn-primary" x="1270" y="16" width="128" height="32" rx="6" />
+  <text class="inverse body" x="1302" y="37">编译法术</text>
+
+  <rect class="panel shadow" x="24" y="88" width="260" height="756" rx="8" />
+  <text class="text section" x="44" y="118">节点库</text>
+  <text class="text small muted" x="44" y="138">拖拽节点到画布</text>
+  <rect class="panel-soft" x="44" y="154" width="220" height="34" rx="6" />
+  <text class="text small muted" x="60" y="176">搜索节点、标签、风险</text>
+
+  <rect class="chip-active" x="44" y="204" width="44" height="28" rx="14" />
+  <text class="inverse small" x="55" y="222">全部</text>
+  <rect class="chip" x="96" y="204" width="44" height="28" rx="14" />
+  <text class="text small" x="107" y="222">介质</text>
+  <rect class="chip" x="148" y="204" width="44" height="28" rx="14" />
+  <text class="text small" x="159" y="222">流程</text>
+  <rect class="chip" x="200" y="204" width="54" height="28" rx="14" />
+  <text class="text small" x="211" y="222">约束</text>
+
+  <text class="text label" x="44" y="262">意图</text>
+  <rect class="intent" x="44" y="276" width="98" height="42" rx="7" />
+  <circle cx="58" cy="297" r="5" fill="#2f8d62" />
+  <text class="text body" x="70" y="302">远程伤害</text>
+  <rect class="intent" x="152" y="276" width="102" height="42" rx="7" />
+  <circle cx="166" cy="297" r="5" fill="#2f8d62" />
+  <text class="text body" x="178" y="302">长期侦查</text>
+
+  <text class="text label" x="44" y="350">介质</text>
+  <rect class="medium" x="44" y="364" width="48" height="38" rx="7" />
+  <text class="text body" x="61" y="388">火</text>
+  <rect class="medium" x="102" y="364" width="48" height="38" rx="7" />
+  <text class="text body" x="119" y="388">风</text>
+  <rect class="medium" x="160" y="364" width="48" height="38" rx="7" />
+  <text class="text body" x="173" y="388">以太</text>
+  <rect class="medium" x="218" y="364" width="36" height="38" rx="7" />
+  <text class="text body" x="229" y="388">雷</text>
+
+  <text class="text label" x="44" y="434">流程</text>
+  <rect class="operation" x="44" y="448" width="72" height="38" rx="7" />
+  <text class="text body" x="66" y="472">开模</text>
+  <rect class="operation" x="124" y="448" width="72" height="38" rx="7" />
+  <text class="text body" x="146" y="472">提纯</text>
+  <rect class="operation" x="44" y="496" width="72" height="38" rx="7" />
+  <text class="text body" x="66" y="520">灌注</text>
+  <rect class="operation" x="124" y="496" width="72" height="38" rx="7" />
+  <text class="text body" x="146" y="520">释放</text>
+
+  <text class="text label" x="44" y="566">结构与载体</text>
+  <rect class="structure" x="44" y="580" width="62" height="38" rx="7" />
+  <text class="text body" x="63" y="604">弹体</text>
+  <rect class="structure" x="114" y="580" width="50" height="38" rx="7" />
+  <text class="text body" x="131" y="604">刃</text>
+  <rect class="carrier" x="172" y="580" width="82" height="38" rx="7" />
+  <text class="text body" x="194" y="604">法杖</text>
+  <rect class="carrier" x="44" y="628" width="74" height="38" rx="7" />
+  <text class="text body" x="66" y="652">咏唱</text>
+  <rect class="carrier" x="126" y="628" width="94" height="38" rx="7" />
+  <text class="text body" x="148" y="652">魔法阵</text>
+
+  <text class="text label" x="44" y="698">高阶接口</text>
+  <rect class="constraint" x="44" y="712" width="74" height="38" rx="7" />
+  <text class="text body" x="66" y="736">祈愿</text>
+  <rect class="constraint" x="126" y="712" width="94" height="38" rx="7" />
+  <text class="text body" x="147" y="736">结界循环</text>
+
+  <rect class="warning" x="44" y="782" width="210" height="42" rx="7" />
+  <text class="text small" x="60" y="806">提示：高危节点默认需要代价与授权</text>
+
+  <rect class="canvas shadow" x="304" y="88" width="820" height="552" rx="8" />
+  <rect x="305" y="129" width="818" height="510" fill="url(#canvas-grid)" opacity="0.92" />
+  <text class="text section" x="324" y="116">法术链路画布</text>
+  <text class="text small muted" x="468" y="116">当前示例：普通主动法术 / 火球术</text>
+  <rect class="chip" x="973" y="101" width="64" height="24" rx="12" />
+  <text class="text small" x="990" y="117">76%</text>
+  <rect class="chip" x="1045" y="101" width="58" height="24" rx="12" />
+  <text class="text small" x="1058" y="117">网格</text>
+
+  <path class="line" marker-end="url(#arrow)" d="M 441 250 C 475 250, 488 250, 520 250" />
+  <path class="line" marker-end="url(#arrow)" d="M 626 250 C 658 250, 674 250, 704 250" />
+  <path class="line" marker-end="url(#arrow)" d="M 812 250 C 842 250, 858 250, 888 250" />
+  <path class="line" marker-end="url(#arrow)" d="M 959 277 C 959 322, 508 322, 508 367" />
+  <path class="line" marker-end="url(#arrow)" d="M 589 386 C 624 386, 645 386, 682 386" />
+  <path class="line" marker-end="url(#arrow)" d="M 763 386 C 798 386, 818 386, 852 386" />
+  <path class="line" marker-end="url(#arrow)" d="M 933 386 C 968 386, 989 386, 1024 386" />
+  <path class="line-soft" marker-end="url(#arrow)" d="M 468 514 C 540 488, 571 433, 682 399" />
+  <path class="line-soft" marker-end="url(#arrow)" d="M 1010 514 C 957 482, 924 448, 895 414" />
+
+  <g class="shadow">
+    <rect class="intent" x="336" y="214" width="105" height="72" rx="8" />
+    <text class="text label" x="364" y="244">远程伤害</text>
+    <text class="text small muted" x="356" y="264">目标：攻击</text>
+    <circle cx="441" cy="250" r="5" fill="#2f8d62" />
+  </g>
+
+  <g class="shadow">
+    <rect class="medium" x="520" y="214" width="106" height="72" rx="8" />
+    <text class="text label" x="565" y="244">火</text>
+    <text class="text small muted" x="548" y="264">释放 / 升温</text>
+    <circle cx="520" cy="250" r="5" fill="#c9562f" />
+    <circle cx="626" cy="250" r="5" fill="#c9562f" />
+  </g>
+
+  <g class="shadow">
+    <rect class="structure" x="704" y="214" width="108" height="72" rx="8" />
+    <text class="text label" x="745" y="244">弹体</text>
+    <text class="text small muted" x="732" y="264">需要开模</text>
+    <circle cx="704" cy="250" r="5" fill="#b8861f" />
+    <circle cx="812" cy="250" r="5" fill="#b8861f" />
+  </g>
+
+  <g class="shadow">
+    <rect class="operation" x="888" y="214" width="90" height="72" rx="8" />
+    <text class="text label" x="918" y="244">开模</text>
+    <text class="text small muted" x="907" y="264">建立容器</text>
+    <circle cx="888" cy="250" r="5" fill="#347f8c" />
+    <circle cx="959" cy="277" r="5" fill="#347f8c" />
+  </g>
+
+  <g class="shadow">
+    <rect class="operation" x="498" y="350" width="91" height="72" rx="8" />
+    <text class="text label" x="528" y="380">提纯</text>
+    <text class="text small muted" x="515" y="400">提取倾向</text>
+    <circle cx="508" cy="367" r="5" fill="#347f8c" />
+    <circle cx="589" cy="386" r="5" fill="#347f8c" />
+  </g>
+
+  <g class="shadow">
+    <rect class="operation" x="682" y="350" width="91" height="72" rx="8" />
+    <text class="text label" x="712" y="380">灌注</text>
+    <text class="text small muted" x="699" y="400">填入结构</text>
+    <circle cx="682" cy="386" r="5" fill="#347f8c" />
+    <circle cx="763" cy="386" r="5" fill="#347f8c" />
+  </g>
+
+  <g class="shadow">
+    <rect class="operation" x="852" y="350" width="91" height="72" rx="8" />
+    <text class="text label" x="882" y="380">释放</text>
+    <text class="text small muted" x="869" y="400">落点方向</text>
+    <circle cx="852" cy="386" r="5" fill="#347f8c" />
+    <circle cx="933" cy="386" r="5" fill="#347f8c" />
+  </g>
+
+  <g class="shadow">
+    <rect class="constraint" x="1024" y="350" width="82" height="72" rx="8" />
+    <text class="text label" x="1038" y="380">代价校验</text>
+    <text class="text small muted" x="1044" y="400">风险评分</text>
+    <circle cx="1024" cy="386" r="5" fill="#9b4d83" />
+  </g>
+
+  <g class="shadow">
+    <rect class="carrier" x="350" y="486" width="118" height="58" rx="8" />
+    <text class="text label" x="386" y="514">手势</text>
+    <text class="text small muted" x="373" y="532">降低起手成本</text>
+  </g>
+
+  <g class="shadow">
+    <rect class="carrier" x="928" y="486" width="118" height="58" rx="8" />
+    <text class="text label" x="964" y="514">法杖</text>
+    <text class="text small muted" x="951" y="532">提高稳定性</text>
+  </g>
+
+  <rect class="warning" x="790" y="478" width="234" height="54" rx="7" />
+  <text class="text label" x="812" y="501">警告：热场外溢</text>
+  <text class="text small muted" x="812" y="520">建议添加外溢约束或缩短释放窗口</text>
+
+  <rect class="panel-soft" x="1018" y="552" width="86" height="66" rx="7" />
+  <rect class="intent" x="1034" y="568" width="20" height="14" rx="3" />
+  <rect class="operation" x="1060" y="568" width="28" height="14" rx="3" />
+  <rect class="medium" x="1034" y="588" width="30" height="14" rx="3" />
+  <rect class="constraint" x="1070" y="588" width="18" height="14" rx="3" />
+  <text class="text small muted" x="1034" y="613">小地图</text>
+
+  <rect class="panel shadow" x="1144" y="88" width="272" height="756" rx="8" />
+  <text class="text section" x="1164" y="118">检查器</text>
+  <text class="text small muted" x="1164" y="138">当前选中节点</text>
+  <rect class="medium" x="1164" y="158" width="232" height="78" rx="8" />
+  <text class="text title" x="1184" y="190">火</text>
+  <text class="text body" x="1184" y="215">介质 / 现象倾向</text>
+  <circle cx="1374" cy="197" r="10" fill="#c9562f" />
+
+  <text class="text label" x="1164" y="266">输出</text>
+  <rect class="chip" x="1164" y="282" width="50" height="26" rx="13" />
+  <text class="text small" x="1178" y="299">升温</text>
+  <rect class="chip" x="1222" y="282" width="50" height="26" rx="13" />
+  <text class="text small" x="1236" y="299">燃烧</text>
+  <rect class="chip" x="1280" y="282" width="50" height="26" rx="13" />
+  <text class="text small" x="1294" y="299">扩散</text>
+  <rect class="chip" x="1338" y="282" width="50" height="26" rx="13" />
+  <text class="text small" x="1352" y="299">释放</text>
+
+  <text class="text label" x="1164" y="338">兼容流程</text>
+  <rect class="operation" x="1164" y="354" width="52" height="30" rx="6" />
+  <text class="text small" x="1177" y="373">提纯</text>
+  <rect class="operation" x="1224" y="354" width="52" height="30" rx="6" />
+  <text class="text small" x="1237" y="373">灌注</text>
+  <rect class="operation" x="1284" y="354" width="52" height="30" rx="6" />
+  <text class="text small" x="1297" y="373">压缩</text>
+  <rect class="operation" x="1164" y="392" width="52" height="30" rx="6" />
+  <text class="text small" x="1177" y="411">扩散</text>
+  <rect class="operation" x="1224" y="392" width="52" height="30" rx="6" />
+  <text class="text small" x="1237" y="411">附加</text>
+
+  <text class="text label" x="1164" y="456">成本偏向</text>
+  <text class="text small muted" x="1164" y="482">精神力</text>
+  <rect class="bar-bg" x="1222" y="472" width="132" height="10" rx="5" />
+  <rect class="bar-mid" x="1222" y="472" width="62" height="10" rx="5" />
+  <text class="text small" x="1364" y="482">2</text>
+  <text class="text small muted" x="1164" y="506">控制力</text>
+  <rect class="bar-bg" x="1222" y="496" width="132" height="10" rx="5" />
+  <rect class="bar-mid" x="1222" y="496" width="86" height="10" rx="5" />
+  <text class="text small" x="1364" y="506">3</text>
+
+  <text class="text label" x="1164" y="540">风险</text>
+  <rect class="danger" x="1164" y="556" width="92" height="30" rx="6" />
+  <text class="text small" x="1180" y="575">热场外溢</text>
+  <rect class="danger" x="1264" y="556" width="92" height="30" rx="6" />
+  <text class="text small" x="1280" y="575">友军误伤</text>
+  <rect class="warning" x="1164" y="594" width="112" height="30" rx="6" />
+  <text class="text small" x="1180" y="613">耗氧与烟雾</text>
+
+  <text class="text label" x="1164" y="652">连接提示</text>
+  <rect class="ok" x="1164" y="668" width="232" height="56" rx="7" />
+  <text class="text body" x="1182" y="692">可连接到：提纯、灌注、扩散</text>
+  <text class="text small muted" x="1182" y="710">弹体结构需要开模承担边界</text>
+
+  <text class="text label" x="1164" y="758">来源摘要</text>
+  <text class="text small muted" x="1164" y="780">世界观手册 / 元素与基础施法</text>
+  <text class="text small muted" x="1164" y="802">火偏释放、升温、燃烧、扩散。</text>
+
+  <rect class="panel shadow" x="304" y="660" width="820" height="184" rx="8" />
+  <text class="text section" x="324" y="690">编译结果</text>
+  <rect class="ok" x="416" y="672" width="94" height="28" rx="14" />
+  <text class="text small" x="438" y="690">compiled</text>
+  <rect class="warning" x="520" y="672" width="84" height="28" rx="14" />
+  <text class="text small" x="542" y="690">警告 3</text>
+
+  <rect class="chip-active" x="324" y="714" width="82" height="30" rx="15" />
+  <text class="inverse small" x="342" y="733">总览</text>
+  <rect class="chip" x="414" y="714" width="82" height="30" rx="15" />
+  <text class="text small" x="432" y="733">失败原因</text>
+  <rect class="chip" x="504" y="714" width="74" height="30" rx="15" />
+  <text class="text small" x="522" y="733">法术卡</text>
+  <rect class="chip" x="586" y="714" width="82" height="30" rx="15" />
+  <text class="text small" x="604" y="733">优化建议</text>
+
+  <text class="text small muted" x="324" y="770">可执行性</text>
+  <rect class="bar-bg" x="386" y="760" width="160" height="12" rx="6" />
+  <rect class="bar-ok" x="386" y="760" width="132" height="12" rx="6" />
+  <text class="text small" x="556" y="771">82</text>
+
+  <text class="text small muted" x="324" y="804">稳定性</text>
+  <rect class="bar-bg" x="386" y="794" width="160" height="12" rx="6" />
+  <rect class="bar-mid" x="386" y="794" width="107" height="12" rx="6" />
+  <text class="text small" x="556" y="805">67</text>
+
+  <text class="text small muted" x="620" y="770">代价承受</text>
+  <rect class="bar-bg" x="694" y="760" width="160" height="12" rx="6" />
+  <rect class="bar-mid" x="694" y="760" width="93" height="12" rx="6" />
+  <text class="text small" x="864" y="771">58</text>
+
+  <text class="text small muted" x="620" y="804">治理安全</text>
+  <rect class="bar-bg" x="694" y="794" width="160" height="12" rx="6" />
+  <rect class="bar-ok" x="694" y="794" width="118" height="12" rx="6" />
+  <text class="text small" x="864" y="805">74</text>
+
+  <rect class="panel-soft" x="902" y="714" width="190" height="108" rx="7" />
+  <text class="text label" x="920" y="740">法术卡预览</text>
+  <text class="text body" x="920" y="764">火球</text>
+  <text class="text small muted" x="920" y="784">远程伤害 / 火 / 弹体</text>
+  <text class="text small muted" x="920" y="804">风险：外溢、被打断</text>
+</svg>

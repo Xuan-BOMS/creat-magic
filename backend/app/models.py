@@ -83,3 +83,105 @@ class CompileResult(BaseModel):
     warnings: list[str]
     errors: list[str]
     spell_card: SpellCard
+
+
+StageId = Literal["model", "purify", "infuse", "release"]
+
+
+class StageDefinition(BaseModel):
+    id: StageId
+    name: str
+    purpose: str
+
+
+class NodeDefinition(BaseModel):
+    id: str
+    stage: StageId
+    name: str
+    category: str
+    summary: str
+    outputs: list[str]
+    tags: list[str] = Field(default_factory=list)
+    risk_tags: list[str] = Field(default_factory=list)
+    score_bias: dict[str, int] = Field(default_factory=dict)
+
+
+class CompoundRule(BaseModel):
+    primary: str
+    secondary: str
+    catalyst: str | None = None
+    result: str
+    form: str
+    risk_tags: list[str] = Field(default_factory=list)
+    score_bias: dict[str, int] = Field(default_factory=dict)
+
+
+class NodeLibrary(BaseModel):
+    version: str
+    stages: list[StageDefinition]
+    nodes: list[NodeDefinition]
+    compounds: list[CompoundRule]
+
+
+class NodeInstance(BaseModel):
+    instance_id: str
+    node_id: str
+    params: dict[str, str | int | float | bool] = Field(default_factory=dict)
+
+
+class StageBuild(BaseModel):
+    stage: StageId
+    nodes: list[NodeInstance]
+
+
+class CompileGraphRequest(BaseModel):
+    id: str | None = None
+    intent: str = "验证并输出可执行法术"
+    stages: list[StageBuild]
+    caster: CasterProfile = Field(default_factory=CasterProfile)
+    context: dict[str, str | int | float | bool] = Field(default_factory=dict)
+
+
+class StageOutcome(BaseModel):
+    stage: StageId
+    label: str
+    result: str
+    node_instance_ids: list[str]
+    tags: list[str] = Field(default_factory=list)
+
+
+class CompileIssue(BaseModel):
+    rule_id: str
+    severity: Literal["error", "warning", "unsafe"]
+    stage: StageId | None = None
+    node_instance_id: str | None = None
+    message: str
+    suggestion: str
+
+
+class RadarScore(BaseModel):
+    key: Literal["power", "stability", "learnability", "mana_efficiency", "versatility", "academic_value", "safety"]
+    label: str
+    value: int = Field(ge=0, le=100)
+    direction: Literal["higher_better"] = "higher_better"
+    reason: str
+
+
+class GraphSpellCard(BaseModel):
+    title: str
+    summary: str
+    chain: list[str]
+    conditions: list[str]
+    costs: list[str]
+    risks: list[str]
+    suggestions: list[str]
+
+
+class CompileGraphResult(BaseModel):
+    status: Literal["compiled", "partial", "failed", "unsafe"]
+    spell_name: str
+    summary: str
+    stage_outcomes: list[StageOutcome]
+    issues: list[CompileIssue]
+    radar: list[RadarScore]
+    spell_card: GraphSpellCard
