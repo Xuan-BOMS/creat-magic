@@ -15,10 +15,11 @@ from app.models import (
     StageId,
     StageOutcome,
 )
-from app.fixed_spell_profiles import fixed_spell_name, system_from_key
+from app.fixed_spell_profiles import FixedSpellProfile, identify_fixed_spell, system_from_key
 from app.node_library import get_node_library
 
 STAGE_ORDER: list[StageId] = ["model", "purify", "infuse", "release"]
+ELEMENT_KEYS = {"fire", "water", "wind", "earth", "ether", "chaos", "vector"}
 STAGE_LABELS: dict[StageId, str] = {
     "model": "开模",
     "purify": "提纯",
@@ -98,6 +99,7 @@ def compile_graph(request: CompileGraphRequest) -> CompileGraphResult:
     risk_tags: list[str] = []
     compiled_nodes: list[NodeDefinition] = []
     context = _CompileContext()
+    fixed_profile = identify_fixed_spell(request.stages) if not any(issue.severity == "error" for issue in issues) else None
 
     if not any(issue.severity == "error" for issue in issues):
         for stage_id in STAGE_ORDER:
@@ -127,7 +129,7 @@ def compile_graph(request: CompileGraphRequest) -> CompileGraphResult:
         else:
             status = "compiled"
 
-    spell_name = _name_spell(stage_outcomes, context, assessment)
+    spell_name = _name_spell(stage_outcomes, context, assessment, fixed_profile)
     summary = _summarize(stage_outcomes, status, assessment)
     radar = _build_radar(score)
     card = _build_card(request, spell_name, summary, stage_outcomes, issues, risk_tags, assessment)
@@ -200,7 +202,7 @@ def _compile_stage(stage_id: StageId, stage: StageBuild, nodes_by_id: dict[str, 
         context.mold = _model_result(context.mold_tags)
         result = context.mold
     elif stage_id == "purify":
-        context.element_keys = [node.outputs[0] for node in definitions if node.outputs]
+        context.element_keys = [output for node in definitions for output in node.outputs if output in ELEMENT_KEYS]
         context.compound = _resolve_compound(context.element_keys, library.compounds)
         context.system = system_from_key(context.element_keys[0]) if len(context.element_keys) == 1 else None
         context.element = context.compound.result if context.compound else _single_element_result(context.element_keys)
@@ -255,6 +257,32 @@ def _model_result(tags: list[str]) -> str:
         return "底层原理模型"
     if "essence" in tags:
         return "本质框架"
+    if "spell_process" in tags:
+        return "施法过程锚点"
+    if "conversion" in tags:
+        return "转化团块"
+    if "binding" in tags:
+        return "束缚外壳"
+    if "vortex" in tags:
+        return "漩涡模具"
+    if "field" in tags:
+        return "力场外壳"
+    if "guidance" in tags:
+        return "导向模具"
+    if "reinforcement" in tags:
+        return "强化模具"
+    if "target" in tags:
+        return "目标锚点"
+    if "ring" in tags:
+        return "环状模具"
+    if "cage" in tags:
+        return "囚笼模具"
+    if "chunk" in tags and "projectile" in tags:
+        return "实体弹体"
+    if "probe" in tags:
+        return "侦测模具"
+    if "mass" in tags:
+        return "团块模具"
     if "existing" in tags:
         return "既有对象"
     if "large_area" in tags:
@@ -393,7 +421,14 @@ def _score_reason(key: str, value: int) -> str:
     return "该维度处于可用但仍需优化的区间。"
 
 
-def _name_spell(outcomes: list[StageOutcome], context: _CompileContext, assessment: SpellLevelAssessment) -> str:
+def _name_spell(
+    outcomes: list[StageOutcome],
+    context: _CompileContext,
+    assessment: SpellLevelAssessment,
+    fixed_profile: FixedSpellProfile | None,
+) -> str:
+    if fixed_profile:
+        return fixed_profile.name
     mold = _outcome(outcomes, "model")
     element = _outcome(outcomes, "purify")
     infusion = _outcome(outcomes, "infuse")
@@ -403,11 +438,8 @@ def _name_spell(outcomes: list[StageOutcome], context: _CompileContext, assessme
         return "泥沼术"
     if element == "雷电系法术":
         return "雷电术"
-    fixed_name = fixed_spell_name(context.system, assessment.tier)
-    if fixed_name:
-        return fixed_name
     if element.endswith("法术"):
-        return element
+        return f"未定义{element}"
     return "未命名法术"
 
 
@@ -438,6 +470,7 @@ def _build_card(
             "四阶段均需形成阶段结果。",
             "灌注必须同时消费开模结果和提纯结果。",
             "释放必须基于已完成的灌注结构。",
+            "固定法术身份由完整节点签名识别，不能由元素和等阶反推。",
             "法术阶数由最高节点等阶与难度增幅共同评定。",
         ],
         costs=[

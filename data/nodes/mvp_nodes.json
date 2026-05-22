@@ -127,6 +127,118 @@
       }
     },
     {
+      "id": "model_ring",
+      "stage": "model",
+      "name": "环状",
+      "category": "shape",
+      "summary": "Sustained ring boundary mold.",
+      "tier": 2,
+      "difficulty": 14,
+      "outputs": [
+        "ring",
+        "core"
+      ],
+      "tags": [
+        "环",
+        "防御"
+      ],
+      "risk_tags": [
+        "block_path"
+      ],
+      "score_bias": {
+        "power": 3,
+        "stability": 7,
+        "learnability": 3,
+        "mana_efficiency": 2,
+        "versatility": 5,
+        "academic_value": 4
+      }
+    },
+    {
+      "id": "model_cage",
+      "stage": "model",
+      "name": "囚笼",
+      "category": "shape",
+      "summary": "Cage mold for restraint spells.",
+      "tier": 2,
+      "difficulty": 14,
+      "outputs": [
+        "cage",
+        "wall"
+      ],
+      "tags": [
+        "囚笼",
+        "束缚"
+      ],
+      "risk_tags": [
+        "block_path"
+      ],
+      "score_bias": {
+        "power": 2,
+        "stability": 7,
+        "learnability": 2,
+        "mana_efficiency": 1,
+        "versatility": 6,
+        "academic_value": 4
+      }
+    },
+    {
+      "id": "model_chunk",
+      "stage": "model",
+      "name": "实体块",
+      "category": "shape",
+      "summary": "Solid projectile carrier.",
+      "tier": 1,
+      "difficulty": 8,
+      "outputs": [
+        "chunk",
+        "projectile"
+      ],
+      "tags": [
+        "实体",
+        "弹体"
+      ],
+      "risk_tags": [
+        "miss"
+      ],
+      "score_bias": {
+        "power": 6,
+        "stability": 5,
+        "learnability": 5,
+        "mana_efficiency": 2,
+        "versatility": 5,
+        "academic_value": 2
+      }
+    },
+    {
+      "id": "model_probe",
+      "stage": "model",
+      "name": "侦测触线",
+      "category": "shape",
+      "summary": "Probe mold for sustained perception.",
+      "tier": 2,
+      "difficulty": 14,
+      "outputs": [
+        "probe",
+        "line"
+      ],
+      "tags": [
+        "侦测",
+        "维持"
+      ],
+      "risk_tags": [
+        "attention_parallel"
+      ],
+      "score_bias": {
+        "power": 0,
+        "stability": 6,
+        "learnability": 2,
+        "mana_efficiency": 1,
+        "versatility": 8,
+        "academic_value": 6
+      }
+    },
+    {
       "id": "model_core_application",
       "stage": "model",
       "name": "核心应用",
@@ -203,6 +315,62 @@
       }
     },
     {
+      "id": "model_reinforcement",
+      "stage": "model",
+      "name": "强化锚点",
+      "category": "shape",
+      "summary": "Existing structure reinforcement mold.",
+      "tier": 3,
+      "difficulty": 20,
+      "outputs": [
+        "reinforcement",
+        "existing"
+      ],
+      "tags": [
+        "强化",
+        "结构"
+      ],
+      "risk_tags": [
+        "cognitive_load"
+      ],
+      "score_bias": {
+        "power": 5,
+        "stability": 6,
+        "learnability": -1,
+        "mana_efficiency": -1,
+        "versatility": 7,
+        "academic_value": 6
+      }
+    },
+    {
+      "id": "model_target",
+      "stage": "model",
+      "name": "目标锚定",
+      "category": "shape",
+      "summary": "Target lock mold for interference or infiltration.",
+      "tier": 3,
+      "difficulty": 20,
+      "outputs": [
+        "target",
+        "focused"
+      ],
+      "tags": [
+        "目标",
+        "干扰"
+      ],
+      "risk_tags": [
+        "cognitive_load"
+      ],
+      "score_bias": {
+        "power": 5,
+        "stability": -2,
+        "learnability": -1,
+        "mana_efficiency": -1,
+        "versatility": 8,
+        "academic_value": 6
+      }
+    },
+    {
       "id": "model_adaptive",
       "stage": "model",
       "name": "自适应结构",
@@ -226,6 +394,118 @@
         "mana_efficiency": -4,
         "versatility": 8,
         "academic_value": 7
+      }
+    },
+    {
+      "id": "model_branching",
+      "stage": "model",
+      "name": "分化结构",
+      "category": "shape",
+      "summary": "Branching mold for chained spread.",
+      "tier": 4,
+      "difficulty": 28,
+      "outputs": [
+        "branching",
+        "adaptive"
+      ],
+      "tags": [
+        "分化",
+        "扩散"
+      ],
+      "risk_tags": [
+        "area_spill"
+      ],
+      "score_bias": {
+        "power": 8,
+        "stability": -7,
+        "learnability": -5,
+        "mana_efficiency": -5,
+        "versatility": 8,
+        "academic_value": 8
+      }
+    },
+    {
+      "id": "model_mass",
+      "stage": "model",
+      "name": "团块",
+      "category": "shape",
+      "summary": "Mass mold for contact and infiltration.",
+      "tier": 4,
+      "difficulty": 28,
+      "outputs": [
+        "mass",
+        "adaptive"
+      ],
+      "tags": [
+        "团块",
+        "渗透"
+      ],
+      "risk_tags": [
+        "drift"
+      ],
+      "score_bias": {
+        "power": 5,
+        "stability": -3,
+        "learnability": -3,
+        "mana_efficiency": -2,
+        "versatility": 9,
+        "academic_value": 7
+      }
+    },
+    {
+      "id": "model_guidance",
+      "stage": "model",
+      "name": "导向轨",
+      "category": "shape",
+      "summary": "Guided path mold for acceleration.",
+      "tier": 4,
+      "difficulty": 28,
+      "outputs": [
+        "guidance",
+        "line"
+      ],
+      "tags": [
+        "导向",
+        "加速"
+      ],
+      "risk_tags": [
+        "drift"
+      ],
+      "score_bias": {
+        "power": 7,
+        "stability": -4,
+        "learnability": -4,
+        "mana_efficiency": -3,
+        "versatility": 9,
+        "academic_value": 8
+      }
+    },
+    {
+      "id": "model_field_shell",
+      "stage": "model",
+      "name": "力场外壳",
+      "category": "shape",
+      "summary": "Field shell mold around a target.",
+      "tier": 4,
+      "difficulty": 28,
+      "outputs": [
+        "field",
+        "wall"
+      ],
+      "tags": [
+        "力场",
+        "偏转"
+      ],
+      "risk_tags": [
+        "cognitive_load"
+      ],
+      "score_bias": {
+        "power": 5,
+        "stability": -2,
+        "learnability": -4,
+        "mana_efficiency": -3,
+        "versatility": 10,
+        "academic_value": 9
       }
     },
     {
@@ -257,6 +537,93 @@
       }
     },
     {
+      "id": "model_vortex",
+      "stage": "model",
+      "name": "漩涡",
+      "category": "shape",
+      "summary": "Self-rotating vortex mold.",
+      "tier": 5,
+      "difficulty": 38,
+      "outputs": [
+        "vortex",
+        "large_area"
+      ],
+      "tags": [
+        "漩涡",
+        "自维持"
+      ],
+      "risk_tags": [
+        "area_spill",
+        "drift"
+      ],
+      "score_bias": {
+        "power": 9,
+        "stability": -6,
+        "learnability": -5,
+        "mana_efficiency": -4,
+        "versatility": 7,
+        "academic_value": 8
+      }
+    },
+    {
+      "id": "model_binding_shell",
+      "stage": "model",
+      "name": "束缚外壳",
+      "category": "shape",
+      "summary": "High-density restraint shell mold.",
+      "tier": 5,
+      "difficulty": 38,
+      "outputs": [
+        "binding",
+        "large_area"
+      ],
+      "tags": [
+        "束缚",
+        "构造"
+      ],
+      "risk_tags": [
+        "block_path",
+        "cognitive_load"
+      ],
+      "score_bias": {
+        "power": 7,
+        "stability": 3,
+        "learnability": -5,
+        "mana_efficiency": -6,
+        "versatility": 7,
+        "academic_value": 8
+      }
+    },
+    {
+      "id": "model_spell_process",
+      "stage": "model",
+      "name": "施法过程",
+      "category": "shape",
+      "summary": "Anchor to an active spell process.",
+      "tier": 5,
+      "difficulty": 38,
+      "outputs": [
+        "spell_process",
+        "existing"
+      ],
+      "tags": [
+        "施法过程",
+        "干扰"
+      ],
+      "risk_tags": [
+        "cognitive_load",
+        "governance_review"
+      ],
+      "score_bias": {
+        "power": 7,
+        "stability": -6,
+        "learnability": -7,
+        "mana_efficiency": -5,
+        "versatility": 9,
+        "academic_value": 10
+      }
+    },
+    {
       "id": "model_existing_target",
       "stage": "model",
       "name": "既有对象",
@@ -281,6 +648,34 @@
         "mana_efficiency": -6,
         "versatility": 9,
         "academic_value": 9
+      }
+    },
+    {
+      "id": "model_conversion_cube",
+      "stage": "model",
+      "name": "转化团块",
+      "category": "shape",
+      "summary": "Controllable no-attribute conversion mass.",
+      "tier": 6,
+      "difficulty": 50,
+      "outputs": [
+        "conversion",
+        "existing"
+      ],
+      "tags": [
+        "转化",
+        "无属性团块"
+      ],
+      "risk_tags": [
+        "cognitive_load"
+      ],
+      "score_bias": {
+        "power": 7,
+        "stability": -7,
+        "learnability": -9,
+        "mana_efficiency": -7,
+        "versatility": 11,
+        "academic_value": 11
       }
     },
     {
@@ -739,6 +1134,288 @@
       }
     },
     {
+      "id": "infuse_flow_layer",
+      "stage": "infuse",
+      "name": "流层灌注",
+      "category": "infusion",
+      "summary": "Layered flow infusion for unloading impact.",
+      "tier": 3,
+      "difficulty": 26,
+      "outputs": [
+        "infusion",
+        "flow_layer"
+      ],
+      "tags": [
+        "流层",
+        "卸力"
+      ],
+      "risk_tags": [
+        "attention_parallel"
+      ],
+      "score_bias": {
+        "power": 2,
+        "stability": 8,
+        "learnability": -2,
+        "mana_efficiency": -1,
+        "versatility": 7,
+        "academic_value": 8
+      }
+    },
+    {
+      "id": "infuse_reinforce",
+      "stage": "infuse",
+      "name": "结构强化",
+      "category": "infusion",
+      "summary": "Infuse a structure with hardness and density.",
+      "tier": 3,
+      "difficulty": 26,
+      "outputs": [
+        "infusion",
+        "reinforce"
+      ],
+      "tags": [
+        "强化",
+        "硬度"
+      ],
+      "risk_tags": [
+        "terrain_damage"
+      ],
+      "score_bias": {
+        "power": 5,
+        "stability": 7,
+        "learnability": -2,
+        "mana_efficiency": -2,
+        "versatility": 8,
+        "academic_value": 7
+      }
+    },
+    {
+      "id": "infuse_vector_multi",
+      "stage": "infuse",
+      "name": "多矢量灌注",
+      "category": "infusion",
+      "summary": "Apply several force vectors to one target.",
+      "tier": 3,
+      "difficulty": 26,
+      "outputs": [
+        "infusion",
+        "vector_multi"
+      ],
+      "tags": [
+        "多重",
+        "矢量"
+      ],
+      "risk_tags": [
+        "attention_parallel"
+      ],
+      "score_bias": {
+        "power": 5,
+        "stability": -6,
+        "learnability": -5,
+        "mana_efficiency": -4,
+        "versatility": 9,
+        "academic_value": 8
+      }
+    },
+    {
+      "id": "infuse_adhesion",
+      "stage": "infuse",
+      "name": "粘附灌注",
+      "category": "infusion",
+      "summary": "No-attribute adhesion infusion.",
+      "tier": 3,
+      "difficulty": 26,
+      "outputs": [
+        "infusion",
+        "adhesion"
+      ],
+      "tags": [
+        "粘附",
+        "侵蚀"
+      ],
+      "risk_tags": [
+        "terrain_damage"
+      ],
+      "score_bias": {
+        "power": 4,
+        "stability": -1,
+        "learnability": -3,
+        "mana_efficiency": -2,
+        "versatility": 9,
+        "academic_value": 8
+      }
+    },
+    {
+      "id": "infuse_propagate",
+      "stage": "infuse",
+      "name": "分化灌注",
+      "category": "infusion",
+      "summary": "Branching infusion for chained spread.",
+      "tier": 4,
+      "difficulty": 34,
+      "outputs": [
+        "infusion",
+        "propagate"
+      ],
+      "tags": [
+        "分化",
+        "扩散"
+      ],
+      "risk_tags": [
+        "area_spill"
+      ],
+      "score_bias": {
+        "power": 9,
+        "stability": -8,
+        "learnability": -6,
+        "mana_efficiency": -5,
+        "versatility": 8,
+        "academic_value": 8
+      }
+    },
+    {
+      "id": "infuse_permeate",
+      "stage": "infuse",
+      "name": "渗透灌注",
+      "category": "infusion",
+      "summary": "Contact infusion that searches and enters gaps.",
+      "tier": 4,
+      "difficulty": 34,
+      "outputs": [
+        "infusion",
+        "permeate"
+      ],
+      "tags": [
+        "渗透",
+        "侵蚀"
+      ],
+      "risk_tags": [
+        "cognitive_load"
+      ],
+      "score_bias": {
+        "power": 6,
+        "stability": -5,
+        "learnability": -5,
+        "mana_efficiency": -4,
+        "versatility": 10,
+        "academic_value": 9
+      }
+    },
+    {
+      "id": "infuse_accelerate",
+      "stage": "infuse",
+      "name": "加速灌注",
+      "category": "infusion",
+      "summary": "Directional acceleration infusion.",
+      "tier": 4,
+      "difficulty": 34,
+      "outputs": [
+        "infusion",
+        "accelerate"
+      ],
+      "tags": [
+        "加速",
+        "导向"
+      ],
+      "risk_tags": [
+        "drift",
+        "overpressure"
+      ],
+      "score_bias": {
+        "power": 8,
+        "stability": -6,
+        "learnability": -5,
+        "mana_efficiency": -4,
+        "versatility": 9,
+        "academic_value": 8
+      }
+    },
+    {
+      "id": "infuse_structure",
+      "stage": "infuse",
+      "name": "构型灌注",
+      "category": "infusion",
+      "summary": "Infuse material with an editable structure.",
+      "tier": 4,
+      "difficulty": 34,
+      "outputs": [
+        "infusion",
+        "structure"
+      ],
+      "tags": [
+        "构造",
+        "形态"
+      ],
+      "risk_tags": [
+        "terrain_damage"
+      ],
+      "score_bias": {
+        "power": 6,
+        "stability": 2,
+        "learnability": -5,
+        "mana_efficiency": -4,
+        "versatility": 11,
+        "academic_value": 9
+      }
+    },
+    {
+      "id": "infuse_mimic",
+      "stage": "infuse",
+      "name": "模仿灌注",
+      "category": "infusion",
+      "summary": "No-attribute ratio adjustment from an observed spell.",
+      "tier": 4,
+      "difficulty": 34,
+      "outputs": [
+        "infusion",
+        "mimic"
+      ],
+      "tags": [
+        "模仿",
+        "适配"
+      ],
+      "risk_tags": [
+        "cognitive_load",
+        "attention_parallel"
+      ],
+      "score_bias": {
+        "power": 5,
+        "stability": -6,
+        "learnability": -7,
+        "mana_efficiency": -3,
+        "versatility": 12,
+        "academic_value": 11
+      }
+    },
+    {
+      "id": "infuse_vector_field",
+      "stage": "infuse",
+      "name": "矢量场灌注",
+      "category": "infusion",
+      "summary": "Field infusion that redirects incoming forces.",
+      "tier": 4,
+      "difficulty": 34,
+      "outputs": [
+        "infusion",
+        "vector_field"
+      ],
+      "tags": [
+        "力场",
+        "偏转"
+      ],
+      "risk_tags": [
+        "cognitive_load"
+      ],
+      "score_bias": {
+        "power": 5,
+        "stability": -4,
+        "learnability": -6,
+        "mana_efficiency": -4,
+        "versatility": 11,
+        "academic_value": 10
+      }
+    },
+    {
       "id": "infuse_high_efficiency",
       "stage": "infuse",
       "name": "高效灌注",
@@ -764,6 +1441,92 @@
         "mana_efficiency": 4,
         "versatility": 8,
         "academic_value": 10
+      }
+    },
+    {
+      "id": "infuse_condense",
+      "stage": "infuse",
+      "name": "凝聚灌注",
+      "category": "infusion",
+      "summary": "Condense material into a restraint shell.",
+      "tier": 5,
+      "difficulty": 44,
+      "outputs": [
+        "infusion",
+        "condense"
+      ],
+      "tags": [
+        "凝聚",
+        "束缚"
+      ],
+      "risk_tags": [
+        "terrain_damage",
+        "cognitive_load"
+      ],
+      "score_bias": {
+        "power": 8,
+        "stability": 4,
+        "learnability": -8,
+        "mana_efficiency": -7,
+        "versatility": 8,
+        "academic_value": 10
+      }
+    },
+    {
+      "id": "infuse_intrusion",
+      "stage": "infuse",
+      "name": "侵入灌注",
+      "category": "infusion",
+      "summary": "Infiltration infusion that follows structural weaknesses.",
+      "tier": 5,
+      "difficulty": 44,
+      "outputs": [
+        "infusion",
+        "intrusion"
+      ],
+      "tags": [
+        "侵入",
+        "弱点"
+      ],
+      "risk_tags": [
+        "cognitive_load"
+      ],
+      "score_bias": {
+        "power": 8,
+        "stability": -8,
+        "learnability": -8,
+        "mana_efficiency": -6,
+        "versatility": 10,
+        "academic_value": 11
+      }
+    },
+    {
+      "id": "infuse_countermagic",
+      "stage": "infuse",
+      "name": "破法灌注",
+      "category": "infusion",
+      "summary": "Vector infusion that disrupts an active spell process.",
+      "tier": 5,
+      "difficulty": 44,
+      "outputs": [
+        "infusion",
+        "countermagic"
+      ],
+      "tags": [
+        "破法",
+        "扰乱"
+      ],
+      "risk_tags": [
+        "cognitive_load",
+        "governance_review"
+      ],
+      "score_bias": {
+        "power": 8,
+        "stability": -8,
+        "learnability": -9,
+        "mana_efficiency": -6,
+        "versatility": 11,
+        "academic_value": 12
       }
     },
     {
@@ -795,6 +1558,34 @@
       }
     },
     {
+      "id": "infuse_conversion",
+      "stage": "infuse",
+      "name": "转化灌注",
+      "category": "infusion",
+      "summary": "Continuous no-attribute conversion infusion.",
+      "tier": 6,
+      "difficulty": 56,
+      "outputs": [
+        "infusion",
+        "conversion"
+      ],
+      "tags": [
+        "转化",
+        "接管"
+      ],
+      "risk_tags": [
+        "cognitive_load"
+      ],
+      "score_bias": {
+        "power": 8,
+        "stability": -8,
+        "learnability": -11,
+        "mana_efficiency": -7,
+        "versatility": 12,
+        "academic_value": 12
+      }
+    },
+    {
       "id": "infuse_essence_control",
       "stage": "infuse",
       "name": "本质调度",
@@ -822,6 +1613,179 @@
       }
     },
     {
+      "id": "infuse_temperature_shift",
+      "stage": "infuse",
+      "name": "温度调度",
+      "category": "infusion",
+      "summary": "Essence-level temperature increase and decrease.",
+      "tier": 7,
+      "difficulty": 70,
+      "outputs": [
+        "infusion",
+        "temperature_shift"
+      ],
+      "tags": [
+        "本质",
+        "温度"
+      ],
+      "risk_tags": [
+        "thermal_spread",
+        "cognitive_load"
+      ],
+      "score_bias": {
+        "power": 10,
+        "stability": -10,
+        "learnability": -12,
+        "mana_efficiency": -8,
+        "versatility": 12,
+        "academic_value": 15
+      }
+    },
+    {
+      "id": "infuse_liquid_composition",
+      "stage": "infuse",
+      "name": "液体构成",
+      "category": "infusion",
+      "summary": "Essence-level liquid concentration and composition control.",
+      "tier": 7,
+      "difficulty": 70,
+      "outputs": [
+        "infusion",
+        "liquid_composition"
+      ],
+      "tags": [
+        "本质",
+        "液体"
+      ],
+      "risk_tags": [
+        "conductive_context",
+        "cognitive_load"
+      ],
+      "score_bias": {
+        "power": 7,
+        "stability": -7,
+        "learnability": -12,
+        "mana_efficiency": -8,
+        "versatility": 13,
+        "academic_value": 15
+      }
+    },
+    {
+      "id": "infuse_gas_selection",
+      "stage": "infuse",
+      "name": "气体选取",
+      "category": "infusion",
+      "summary": "Essence-level gas extraction and replacement.",
+      "tier": 7,
+      "difficulty": 70,
+      "outputs": [
+        "infusion",
+        "gas_selection"
+      ],
+      "tags": [
+        "本质",
+        "气体"
+      ],
+      "risk_tags": [
+        "drift",
+        "cognitive_load"
+      ],
+      "score_bias": {
+        "power": 7,
+        "stability": -8,
+        "learnability": -12,
+        "mana_efficiency": -8,
+        "versatility": 13,
+        "academic_value": 15
+      }
+    },
+    {
+      "id": "infuse_solid_generation",
+      "stage": "infuse",
+      "name": "固体生成",
+      "category": "infusion",
+      "summary": "Essence-level solid construction and decomposition.",
+      "tier": 7,
+      "difficulty": 70,
+      "outputs": [
+        "infusion",
+        "solid_generation"
+      ],
+      "tags": [
+        "本质",
+        "固体"
+      ],
+      "risk_tags": [
+        "terrain_damage",
+        "cognitive_load"
+      ],
+      "score_bias": {
+        "power": 9,
+        "stability": -6,
+        "learnability": -12,
+        "mana_efficiency": -8,
+        "versatility": 12,
+        "academic_value": 15
+      }
+    },
+    {
+      "id": "infuse_matter_transmutation",
+      "stage": "infuse",
+      "name": "物质转化",
+      "category": "infusion",
+      "summary": "Essence-level search for common points between materials.",
+      "tier": 7,
+      "difficulty": 70,
+      "outputs": [
+        "infusion",
+        "matter_transmutation"
+      ],
+      "tags": [
+        "本质",
+        "转化"
+      ],
+      "risk_tags": [
+        "cognitive_load",
+        "governance_review"
+      ],
+      "score_bias": {
+        "power": 9,
+        "stability": -12,
+        "learnability": -13,
+        "mana_efficiency": -9,
+        "versatility": 14,
+        "academic_value": 16
+      }
+    },
+    {
+      "id": "infuse_vector_guidance",
+      "stage": "infuse",
+      "name": "矢量引导",
+      "category": "infusion",
+      "summary": "Essence-level guidance of force direction.",
+      "tier": 7,
+      "difficulty": 70,
+      "outputs": [
+        "infusion",
+        "vector_guidance"
+      ],
+      "tags": [
+        "本质",
+        "矢量"
+      ],
+      "risk_tags": [
+        "cognitive_load"
+      ],
+      "score_bias": {
+        "power": 9,
+        "stability": -10,
+        "learnability": -12,
+        "mana_efficiency": -8,
+        "versatility": 13,
+        "academic_value": 15
+      }
+    },
+    {
       "id": "infuse_origin_formula",
       "stage": "infuse",
       "name": "原理公式",
@@ -846,6 +1810,180 @@
         "mana_efficiency": -10,
         "versatility": 11,
         "academic_value": 16
+      }
+    },
+    {
+      "id": "infuse_energy_seed",
+      "stage": "infuse",
+      "name": "能量种子",
+      "category": "infusion",
+      "summary": "Origin-level pure energy manufacture seed.",
+      "tier": 8,
+      "difficulty": 84,
+      "outputs": [
+        "infusion",
+        "energy_seed"
+      ],
+      "tags": [
+        "底层原理",
+        "能量"
+      ],
+      "risk_tags": [
+        "thermal_spread",
+        "cognitive_load"
+      ],
+      "score_bias": {
+        "power": 12,
+        "stability": -12,
+        "learnability": -14,
+        "mana_efficiency": -10,
+        "versatility": 12,
+        "academic_value": 17
+      }
+    },
+    {
+      "id": "infuse_humidity_state",
+      "stage": "infuse",
+      "name": "湿度状态",
+      "category": "infusion",
+      "summary": "Origin-level humidity and liquid state variation.",
+      "tier": 8,
+      "difficulty": 84,
+      "outputs": [
+        "infusion",
+        "humidity_state"
+      ],
+      "tags": [
+        "底层原理",
+        "湿度"
+      ],
+      "risk_tags": [
+        "conductive_context",
+        "cognitive_load"
+      ],
+      "score_bias": {
+        "power": 8,
+        "stability": -9,
+        "learnability": -14,
+        "mana_efficiency": -10,
+        "versatility": 14,
+        "academic_value": 17
+      }
+    },
+    {
+      "id": "infuse_kinetic_seed",
+      "stage": "infuse",
+      "name": "动能种子",
+      "category": "infusion",
+      "summary": "Origin-level manufacture of motion and stillness.",
+      "tier": 8,
+      "difficulty": 84,
+      "outputs": [
+        "infusion",
+        "kinetic_seed"
+      ],
+      "tags": [
+        "底层原理",
+        "动能"
+      ],
+      "risk_tags": [
+        "overpressure",
+        "cognitive_load"
+      ],
+      "score_bias": {
+        "power": 11,
+        "stability": -12,
+        "learnability": -14,
+        "mana_efficiency": -10,
+        "versatility": 13,
+        "academic_value": 17
+      }
+    },
+    {
+      "id": "infuse_matter_seed",
+      "stage": "infuse",
+      "name": "物质种子",
+      "category": "infusion",
+      "summary": "Origin-level material cohesion and separation seed.",
+      "tier": 8,
+      "difficulty": 84,
+      "outputs": [
+        "infusion",
+        "matter_seed"
+      ],
+      "tags": [
+        "底层原理",
+        "物质"
+      ],
+      "risk_tags": [
+        "terrain_damage",
+        "cognitive_load"
+      ],
+      "score_bias": {
+        "power": 10,
+        "stability": -10,
+        "learnability": -14,
+        "mana_efficiency": -10,
+        "versatility": 13,
+        "academic_value": 17
+      }
+    },
+    {
+      "id": "infuse_chaos_fusion",
+      "stage": "infuse",
+      "name": "混沌融合",
+      "category": "infusion",
+      "summary": "Origin-level fusion of many functions into one.",
+      "tier": 8,
+      "difficulty": 84,
+      "outputs": [
+        "infusion",
+        "chaos_fusion"
+      ],
+      "tags": [
+        "底层原理",
+        "混沌"
+      ],
+      "risk_tags": [
+        "cognitive_load",
+        "governance_review"
+      ],
+      "score_bias": {
+        "power": 11,
+        "stability": -14,
+        "learnability": -15,
+        "mana_efficiency": -11,
+        "versatility": 15,
+        "academic_value": 18
+      }
+    },
+    {
+      "id": "infuse_spirit_guidance",
+      "stage": "infuse",
+      "name": "精神引导",
+      "category": "infusion",
+      "summary": "Origin-level guidance of motive force and will.",
+      "tier": 8,
+      "difficulty": 84,
+      "outputs": [
+        "infusion",
+        "spirit_guidance"
+      ],
+      "tags": [
+        "底层原理",
+        "精神"
+      ],
+      "risk_tags": [
+        "cognitive_load",
+        "governance_review"
+      ],
+      "score_bias": {
+        "power": 8,
+        "stability": -13,
+        "learnability": -15,
+        "mana_efficiency": -11,
+        "versatility": 14,
+        "academic_value": 18
       }
     },
     {
@@ -933,6 +2071,33 @@
       }
     },
     {
+      "id": "release_vector_push",
+      "stage": "release",
+      "name": "推力释放",
+      "category": "release",
+      "summary": "Direct vector push release.",
+      "tier": 1,
+      "difficulty": 8,
+      "outputs": [
+        "effect"
+      ],
+      "tags": [
+        "矢量",
+        "推力"
+      ],
+      "risk_tags": [
+        "miss"
+      ],
+      "score_bias": {
+        "power": 4,
+        "stability": 4,
+        "learnability": 6,
+        "mana_efficiency": 5,
+        "versatility": 7,
+        "academic_value": 3
+      }
+    },
+    {
       "id": "release_maintain",
       "stage": "release",
       "name": "维持释放",
@@ -959,6 +2124,59 @@
       }
     },
     {
+      "id": "release_bind",
+      "stage": "release",
+      "name": "束缚释放",
+      "category": "release",
+      "summary": "Lock a restraint mold into effect.",
+      "tier": 2,
+      "difficulty": 14,
+      "outputs": [
+        "effect"
+      ],
+      "tags": [
+        "束缚"
+      ],
+      "risk_tags": [
+        "block_path"
+      ],
+      "score_bias": {
+        "power": 2,
+        "stability": 5,
+        "learnability": 2,
+        "mana_efficiency": -1,
+        "versatility": 7,
+        "academic_value": 5
+      }
+    },
+    {
+      "id": "release_sense",
+      "stage": "release",
+      "name": "感知释放",
+      "category": "release",
+      "summary": "Return sustained vector feedback as perception.",
+      "tier": 2,
+      "difficulty": 14,
+      "outputs": [
+        "effect"
+      ],
+      "tags": [
+        "侦测",
+        "感知"
+      ],
+      "risk_tags": [
+        "attention_parallel"
+      ],
+      "score_bias": {
+        "power": 0,
+        "stability": 6,
+        "learnability": 1,
+        "mana_efficiency": 1,
+        "versatility": 9,
+        "academic_value": 7
+      }
+    },
+    {
       "id": "release_activate",
       "stage": "release",
       "name": "激发释放",
@@ -982,6 +2200,33 @@
         "mana_efficiency": -3,
         "versatility": 4,
         "academic_value": 5
+      }
+    },
+    {
+      "id": "release_disrupt",
+      "stage": "release",
+      "name": "扰乱释放",
+      "category": "release",
+      "summary": "Release conflicting vectors into a target process.",
+      "tier": 3,
+      "difficulty": 26,
+      "outputs": [
+        "effect"
+      ],
+      "tags": [
+        "扰乱",
+        "矢量"
+      ],
+      "risk_tags": [
+        "cognitive_load"
+      ],
+      "score_bias": {
+        "power": 5,
+        "stability": -6,
+        "learnability": -5,
+        "mana_efficiency": -4,
+        "versatility": 10,
+        "academic_value": 8
       }
     },
     {
@@ -1016,8 +2261,8 @@
       "name": "流动释放",
       "category": "release",
       "summary": "Flow release.",
-      "tier": 2,
-      "difficulty": 16,
+      "tier": 1,
+      "difficulty": 8,
       "outputs": [
         "effect"
       ],
@@ -1034,6 +2279,170 @@
         "mana_efficiency": 4,
         "versatility": 7,
         "academic_value": 5
+      }
+    },
+    {
+      "id": "release_chain_spread",
+      "stage": "release",
+      "name": "连锁扩散",
+      "category": "release",
+      "summary": "Chain-spread release after contact.",
+      "tier": 4,
+      "difficulty": 34,
+      "outputs": [
+        "effect"
+      ],
+      "tags": [
+        "连锁",
+        "扩散"
+      ],
+      "risk_tags": [
+        "area_spill"
+      ],
+      "score_bias": {
+        "power": 9,
+        "stability": -8,
+        "learnability": -6,
+        "mana_efficiency": -5,
+        "versatility": 8,
+        "academic_value": 8
+      }
+    },
+    {
+      "id": "release_infiltrate",
+      "stage": "release",
+      "name": "侵入释放",
+      "category": "release",
+      "summary": "Drive the completed structure into target gaps.",
+      "tier": 4,
+      "difficulty": 34,
+      "outputs": [
+        "effect"
+      ],
+      "tags": [
+        "侵入",
+        "渗透"
+      ],
+      "risk_tags": [
+        "cognitive_load"
+      ],
+      "score_bias": {
+        "power": 6,
+        "stability": -5,
+        "learnability": -5,
+        "mana_efficiency": -4,
+        "versatility": 10,
+        "academic_value": 9
+      }
+    },
+    {
+      "id": "release_accelerate",
+      "stage": "release",
+      "name": "加速释放",
+      "category": "release",
+      "summary": "Release sustained acceleration along a guided path.",
+      "tier": 4,
+      "difficulty": 34,
+      "outputs": [
+        "effect"
+      ],
+      "tags": [
+        "加速",
+        "导向"
+      ],
+      "risk_tags": [
+        "drift",
+        "overpressure"
+      ],
+      "score_bias": {
+        "power": 8,
+        "stability": -6,
+        "learnability": -5,
+        "mana_efficiency": -4,
+        "versatility": 9,
+        "academic_value": 8
+      }
+    },
+    {
+      "id": "release_construct",
+      "stage": "release",
+      "name": "构造释放",
+      "category": "release",
+      "summary": "Apply an editable material structure to the field.",
+      "tier": 4,
+      "difficulty": 34,
+      "outputs": [
+        "effect"
+      ],
+      "tags": [
+        "构造",
+        "形态"
+      ],
+      "risk_tags": [
+        "terrain_damage"
+      ],
+      "score_bias": {
+        "power": 6,
+        "stability": 1,
+        "learnability": -5,
+        "mana_efficiency": -4,
+        "versatility": 11,
+        "academic_value": 9
+      }
+    },
+    {
+      "id": "release_reflect",
+      "stage": "release",
+      "name": "偏转释放",
+      "category": "release",
+      "summary": "Redirect or rebound forces around the target.",
+      "tier": 4,
+      "difficulty": 34,
+      "outputs": [
+        "effect"
+      ],
+      "tags": [
+        "偏转",
+        "反弹"
+      ],
+      "risk_tags": [
+        "cognitive_load"
+      ],
+      "score_bias": {
+        "power": 5,
+        "stability": -4,
+        "learnability": -6,
+        "mana_efficiency": -4,
+        "versatility": 11,
+        "academic_value": 10
+      }
+    },
+    {
+      "id": "release_self_sustain",
+      "stage": "release",
+      "name": "自维持释放",
+      "category": "release",
+      "summary": "Release a structure that keeps operating after formation.",
+      "tier": 5,
+      "difficulty": 44,
+      "outputs": [
+        "effect"
+      ],
+      "tags": [
+        "自维持",
+        "高阶"
+      ],
+      "risk_tags": [
+        "area_spill",
+        "governance_review"
+      ],
+      "score_bias": {
+        "power": 9,
+        "stability": -6,
+        "learnability": -7,
+        "mana_efficiency": 2,
+        "versatility": 8,
+        "academic_value": 10
       }
     },
     {

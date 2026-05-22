@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.fixed_spell_profiles import SPELL_PROFILES
 
 client = TestClient(app)
 
@@ -78,6 +79,7 @@ def test_difficulty_overflow_can_raise_above_highest_node_tier() -> None:
     response = client.post("/api/compile-graph", json=payload)
     assert response.status_code == 200
     data = response.json()
+    assert data["spell_name"] == "未定义火系法术"
     assert data["spell_level"]["base_tier"] == 1
     assert data["spell_level"]["tier"] > 1
     assert data["spell_level"]["difficulty_bonus"] > 0
@@ -110,6 +112,12 @@ def test_fixed_spell_system_examples_cover_six_systems_and_tiers_1_to_10() -> No
     assert len(fixed_examples) == 60
     seen = {(item["context"]["system"], item["context"]["expected_tier"]) for item in fixed_examples}
     assert seen == {(system, tier) for system in {"fire", "water", "wind", "earth", "chaos", "vector"} for tier in range(1, 11)}
+    signatures = {
+        tuple((stage["stage"], tuple(node["node_id"] for node in stage["nodes"])) for stage in item["stages"])
+        for item in fixed_examples
+    }
+    assert len(signatures) == 60
+    assert len(SPELL_PROFILES) == 60
 
     for example in fixed_examples:
         compile_response = client.post("/api/compile-graph", json=example)
@@ -118,6 +126,18 @@ def test_fixed_spell_system_examples_cover_six_systems_and_tiers_1_to_10() -> No
         assert data["status"] != "failed"
         assert data["spell_level"]["tier"] == example["context"]["expected_tier"]
         assert data["spell_name"] == example["context"]["expected_spell_name"]
+
+
+def test_fixed_spell_name_comes_from_node_signature_not_context() -> None:
+    payload = _example("fixed-fire-1")
+    payload["context"]["system"] = "water"
+    payload["context"]["expected_tier"] = 8
+    payload["context"]["expected_spell_name"] = "湿度变动"
+    response = client.post("/api/compile-graph", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["spell_name"] == "火球术"
+    assert data["spell_level"]["tier"] == 1
 
 
 def test_compile_graph_rejects_empty_stage() -> None:

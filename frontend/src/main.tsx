@@ -75,6 +75,7 @@ type CompileResult = {
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? "http://127.0.0.1:8000";
 const storageKey = "spell-graph-builder-state";
+const nodeViewModeKey = "spell-node-drawer-compact";
 
 const defaultBuild: CompileRequest = {
   intent: "法术构建",
@@ -99,6 +100,7 @@ function App() {
   const [result, setResult] = React.useState<CompileResult | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [apiError, setApiError] = React.useState("");
+  const [compactNodes, setCompactNodes] = React.useState(() => localStorage.getItem(nodeViewModeKey) !== "detail");
 
   React.useEffect(() => {
     fetchJson<NodeLibrary>("/api/nodes")
@@ -112,6 +114,10 @@ function App() {
   React.useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(build));
   }, [build]);
+
+  React.useEffect(() => {
+    localStorage.setItem(nodeViewModeKey, compactNodes ? "compact" : "detail");
+  }, [compactNodes]);
 
   React.useEffect(() => {
     if (library && !result) {
@@ -221,8 +227,13 @@ function App() {
       <section className="workspace">
         <aside className="node-drawer">
           <div className="drawer-head">
-            <span>节点</span>
-            <strong>{activeStage?.name}</strong>
+            <div>
+              <span>节点</span>
+              <strong>{activeStage?.name}</strong>
+            </div>
+            <button className="node-mode-toggle" onClick={() => setCompactNodes((value) => !value)} aria-pressed={!compactNodes}>
+              {compactNodes ? "简略" : "详细"}
+            </button>
           </div>
           <div className="stage-tabs">
             {library.stages.map((stage, index) => (
@@ -232,9 +243,9 @@ function App() {
               </button>
             ))}
           </div>
-          <div className="node-picker">
+          <div className={compactNodes ? "node-picker compact" : "node-picker detail"}>
             {activeNodes.map((node) => (
-              <button className={`pick-node ${node.stage}`} key={node.id} onClick={() => addNode(node)}>
+              <button className={`pick-node ${node.stage}`} key={node.id} onClick={() => addNode(node)} title={`${node.name}，${node.tier}阶，难度 +${node.difficulty}`}>
                 <Plus size={14} />
                 <span>
                   {node.name}
