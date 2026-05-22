@@ -7,6 +7,5 @@
     {"stage": "infuse", "nodes": [{"instance_id": "infuse-1", "node_id": "infuse_multi"}]},
     {"stage": "release", "nodes": [{"instance_id": "release-1", "node_id": "release_flow"}]}
   ],
-  "caster": {"focus": 75, "control": 72, "knowledge": 4},
   "context": {"environment": "训练场"}
 }

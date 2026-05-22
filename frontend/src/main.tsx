@@ -18,6 +18,8 @@ type NodeDefinition = {
   name: string;
   category: string;
   summary: string;
+  tier: number;
+  difficulty: number;
   outputs: string[];
   tags: string[];
   risk_tags: string[];
@@ -44,11 +46,6 @@ type CompileRequest = {
   id?: string;
   intent: string;
   stages: StageBuild[];
-  caster: {
-    focus: number;
-    control: number;
-    knowledge: number;
-  };
   context: Record<string, string | number | boolean>;
 };
 
@@ -56,6 +53,16 @@ type CompileResult = {
   status: Status;
   spell_name: string;
   summary: string;
+  spell_level: {
+    tier: number;
+    label: string;
+    base_tier: number;
+    difficulty: number;
+    difficulty_limit: number;
+    difficulty_bonus: number;
+    anchor_nodes: string[];
+    reasons: string[];
+  };
   stage_outcomes: { stage: StageId; label: string; result: string; node_instance_ids: string[]; tags: string[] }[];
   issues: { severity: "error" | "warning" | "unsafe" }[];
   radar: { key: string; label: string; value: number; direction: "higher_better" | "higher_worse"; reason: string }[];
@@ -77,7 +84,6 @@ const defaultBuild: CompileRequest = {
     { stage: "infuse", nodes: [{ instance_id: "infuse-1", node_id: "infuse_standard" }] },
     { stage: "release", nodes: [{ instance_id: "release-1", node_id: "release_projectile" }] },
   ],
-  caster: { focus: 65, control: 60, knowledge: 2 },
   context: { environment: "训练场" },
 };
 
@@ -89,6 +95,7 @@ function App() {
   });
   const [activeStageId, setActiveStageId] = React.useState<StageId>("model");
   const [drawerOpen, setDrawerOpen] = React.useState(true);
+  const [examples, setExamples] = React.useState<CompileRequest[]>([]);
   const [result, setResult] = React.useState<CompileResult | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [apiError, setApiError] = React.useState("");
@@ -97,6 +104,9 @@ function App() {
     fetchJson<NodeLibrary>("/api/nodes")
       .then(setLibrary)
       .catch(() => setApiError("无法连接后端 API。"));
+    fetchJson<CompileRequest[]>("/api/examples")
+      .then(setExamples)
+      .catch(() => undefined);
   }, []);
 
   React.useEffect(() => {
@@ -168,6 +178,13 @@ function App() {
     }));
   }
 
+  function loadExample(exampleId: string) {
+    const example = examples.find((item) => item.id === exampleId);
+    if (!example) return;
+    setBuild(example);
+    void compile(example);
+  }
+
   if (!library) {
     return (
       <main className="loading">
@@ -187,6 +204,14 @@ function App() {
           <span>轰界</span>
           <h1>法术生成器</h1>
         </div>
+        <select className="example-select" value={build.id ?? ""} onChange={(event) => loadExample(event.target.value)} aria-label="选择固定法术示例">
+          <option value="">自由构建</option>
+          {examples.map((example) => (
+            <option key={example.id} value={example.id}>
+              {exampleLabel(example)}
+            </option>
+          ))}
+        </select>
         <button className="compile-button" onClick={() => compile()} disabled={loading}>
           <Play size={17} />
           {loading ? "编译中" : "编译"}
@@ -211,7 +236,10 @@ function App() {
             {activeNodes.map((node) => (
               <button className={`pick-node ${node.stage}`} key={node.id} onClick={() => addNode(node)}>
                 <Plus size={14} />
-                <span>{node.name}</span>
+                <span>
+                  {node.name}
+                  <small>{node.tier}阶 / 难度 +{node.difficulty}</small>
+                </span>
               </button>
             ))}
           </div>
@@ -234,7 +262,10 @@ function App() {
                         const node = nodeMap.get(instance.node_id);
                         return (
                           <article className={`work-node ${stage.id}`} key={instance.instance_id} onClick={(event) => event.stopPropagation()}>
-                            <strong>{node?.name ?? instance.node_id}</strong>
+                            <strong>
+                              {node?.name ?? instance.node_id}
+                              {node && <small>{node.tier}阶 +{node.difficulty}</small>}
+                            </strong>
                             <div className="node-actions">
                               <button onClick={() => moveNode(stage.id, instance.instance_id, -1)} disabled={nodeIndex === 0} aria-label="上移">
                                 <ArrowUp size={13} />
@@ -261,7 +292,24 @@ function App() {
             <div className="result-copy">
               <span className={`status ${result?.status ?? "pending"}`}>{statusText(result?.status)}</span>
               <h2>{result?.spell_name ?? "待编译法术"}</h2>
+              {result && (
+                <div className="tier-strip">
+                  <strong>{result.spell_level.label}</strong>
+                  <span>锚点 {result.spell_level.base_tier}阶</span>
+                  <span>
+                    难度 {result.spell_level.difficulty}/{result.spell_level.difficulty_limit}
+                  </span>
+                  {result.spell_level.difficulty_bonus > 0 && <span>溢出 +{result.spell_level.difficulty_bonus}</span>}
+                </div>
+              )}
               <p>{apiError || result?.summary || "点击步骤选择节点，完成四步后编译。"}</p>
+              {result && (
+                <ul className="tier-reasons">
+                  {result.spell_level.reasons.map((reason) => (
+                    <li key={reason}>{reason}</li>
+                  ))}
+                </ul>
+              )}
             </div>
             {result && <RadarChart scores={result.radar} />}
           </section>
@@ -287,6 +335,13 @@ function statusText(status?: Status) {
   if (status === "failed") return "失败";
   if (status === "partial") return "部分";
   return "待编译";
+}
+
+function exampleLabel(example: CompileRequest) {
+  const tier = example.context.expected_tier;
+  const name = example.context.expected_spell_name;
+  if (typeof tier === "number" && typeof name === "string") return `${tier}阶 ${name}`;
+  return example.id ?? "示例";
 }
 
 function RadarChart({ scores }: { scores: CompileResult["radar"] }) {

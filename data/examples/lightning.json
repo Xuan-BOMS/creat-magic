@@ -14,6 +14,5 @@
     {"stage": "infuse", "nodes": [{"instance_id": "infuse-1", "node_id": "infuse_compress"}]},
     {"stage": "release", "nodes": [{"instance_id": "release-1", "node_id": "release_activate"}]}
   ],
-  "caster": {"focus": 88, "control": 82, "knowledge": 6},
   "context": {"environment": "战斗"}
 }

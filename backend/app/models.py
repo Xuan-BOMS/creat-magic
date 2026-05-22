@@ -100,6 +100,8 @@ class NodeDefinition(BaseModel):
     name: str
     category: str
     summary: str
+    tier: int = Field(ge=0, le=10)
+    difficulty: int = Field(ge=0)
     outputs: list[str]
     tags: list[str] = Field(default_factory=list)
     risk_tags: list[str] = Field(default_factory=list)
@@ -112,6 +114,8 @@ class CompoundRule(BaseModel):
     catalyst: str | None = None
     result: str
     form: str
+    tier: int = Field(1, ge=0, le=10)
+    difficulty: int = Field(0, ge=0)
     risk_tags: list[str] = Field(default_factory=list)
     score_bias: dict[str, int] = Field(default_factory=dict)
 
@@ -138,7 +142,6 @@ class CompileGraphRequest(BaseModel):
     id: str | None = None
     intent: str = "验证并输出可执行法术"
     stages: list[StageBuild]
-    caster: CasterProfile = Field(default_factory=CasterProfile)
     context: dict[str, str | int | float | bool] = Field(default_factory=dict)
 
 
@@ -177,10 +180,22 @@ class GraphSpellCard(BaseModel):
     suggestions: list[str]
 
 
+class SpellLevelAssessment(BaseModel):
+    tier: int = Field(ge=0, le=10)
+    label: str
+    base_tier: int = Field(ge=0, le=10)
+    difficulty: int = Field(ge=0)
+    difficulty_limit: int = Field(ge=0)
+    difficulty_bonus: int = Field(ge=0)
+    anchor_nodes: list[str]
+    reasons: list[str]
+
+
 class CompileGraphResult(BaseModel):
     status: Literal["compiled", "partial", "failed", "unsafe"]
     spell_name: str
     summary: str
+    spell_level: SpellLevelAssessment
     stage_outcomes: list[StageOutcome]
     issues: list[CompileIssue]
     radar: list[RadarScore]

@@ -10,10 +10,12 @@ from app.models import (
     NodeInstance,
     NodeLibrary,
     RadarScore,
+    SpellLevelAssessment,
     StageBuild,
     StageId,
     StageOutcome,
 )
+from app.fixed_spell_profiles import fixed_spell_name, system_from_key
 from app.node_library import get_node_library
 
 STAGE_ORDER: list[StageId] = ["model", "purify", "infuse", "release"]
@@ -39,6 +41,32 @@ BASE_SCORE = {
     "versatility": 55,
     "academic_value": 45,
 }
+DIFFICULTY_LIMITS = {
+    0: 18,
+    1: 44,
+    2: 60,
+    3: 90,
+    4: 112,
+    5: 140,
+    6: 176,
+    7: 218,
+    8: 260,
+    9: 320,
+    10: 999,
+}
+DIFFICULTY_STEPS = {
+    0: 18,
+    1: 20,
+    2: 24,
+    3: 28,
+    4: 32,
+    5: 36,
+    6: 42,
+    7: 50,
+    8: 60,
+    9: 72,
+    10: 999,
+}
 RISK_TEXT = {
     "thermal_spread": "热场外溢",
     "edge_control": "刃形边界散逸",
@@ -55,6 +83,8 @@ RISK_TEXT = {
     "burst": "激发爆发",
     "governance_review": "治理审查",
     "high_voltage": "高压误伤",
+    "internal_boundary": "体内边界突破",
+    "domain_override": "领域统摄失控",
 }
 
 
@@ -66,14 +96,16 @@ def compile_graph(request: CompileGraphRequest) -> CompileGraphResult:
     stage_outcomes: list[StageOutcome] = []
     score = dict(BASE_SCORE)
     risk_tags: list[str] = []
+    compiled_nodes: list[NodeDefinition] = []
+    context = _CompileContext()
 
     if not any(issue.severity == "error" for issue in issues):
-        context = _CompileContext()
         for stage_id in STAGE_ORDER:
             outcome = _compile_stage(stage_id, stages[stage_id], nodes_by_id, library, context)
             stage_outcomes.append(outcome)
             for instance in stages[stage_id].nodes:
                 node = nodes_by_id[instance.node_id]
+                compiled_nodes.append(node)
                 _merge_score(score, node.score_bias)
                 risk_tags.extend(node.risk_tags)
             if stage_id == "purify" and context.compound:
@@ -81,12 +113,13 @@ def compile_graph(request: CompileGraphRequest) -> CompileGraphResult:
                 risk_tags.extend(context.compound.risk_tags)
         issues.extend(_semantic_issues(context))
 
+    assessment = _assess_spell_level(compiled_nodes, context.compound)
     if any(issue.severity == "error" for issue in issues):
         status = "failed"
     else:
         if risk_tags:
             issues.extend(_risk_issues(risk_tags))
-        score = _apply_caster(score, request)
+        score = _clamp_score(score)
         if any(issue.severity == "unsafe" for issue in issues):
             status = "unsafe"
         elif min(score["stability"], score["mana_efficiency"]) < 45:
@@ -94,14 +127,15 @@ def compile_graph(request: CompileGraphRequest) -> CompileGraphResult:
         else:
             status = "compiled"
 
-    spell_name = _name_spell(stage_outcomes)
-    summary = _summarize(stage_outcomes, status)
+    spell_name = _name_spell(stage_outcomes, context, assessment)
+    summary = _summarize(stage_outcomes, status, assessment)
     radar = _build_radar(score)
-    card = _build_card(request, spell_name, summary, stage_outcomes, issues, risk_tags)
+    card = _build_card(request, spell_name, summary, stage_outcomes, issues, risk_tags, assessment)
     return CompileGraphResult(
         status=status,
         spell_name=spell_name,
         summary=summary,
+        spell_level=assessment,
         stage_outcomes=stage_outcomes,
         issues=issues,
         radar=radar,
@@ -114,6 +148,7 @@ class _CompileContext:
     mold_tags: list[str] = []
     element: str | None = None
     element_keys: list[str] = []
+    system: str | None = None
     compound: CompoundRule | None = None
     infusion: str | None = None
     infusion_tags: list[str] = []
@@ -167,6 +202,7 @@ def _compile_stage(stage_id: StageId, stage: StageBuild, nodes_by_id: dict[str, 
     elif stage_id == "purify":
         context.element_keys = [node.outputs[0] for node in definitions if node.outputs]
         context.compound = _resolve_compound(context.element_keys, library.compounds)
+        context.system = system_from_key(context.element_keys[0]) if len(context.element_keys) == 1 else None
         context.element = context.compound.result if context.compound else _single_element_result(context.element_keys)
         result = context.element
     elif stage_id == "infuse":
@@ -211,6 +247,24 @@ def _issue(rule_id: str, severity: str, stage: StageId | None, node_instance_id:
 
 
 def _model_result(tags: list[str]) -> str:
+    if "domain" in tags:
+        return "领域框架"
+    if "internal" in tags:
+        return "体内边界"
+    if "origin" in tags:
+        return "底层原理模型"
+    if "essence" in tags:
+        return "本质框架"
+    if "existing" in tags:
+        return "既有对象"
+    if "large_area" in tags:
+        return "广域边界"
+    if "adaptive" in tags:
+        return "自适应结构"
+    if "focused" in tags:
+        return "聚焦模具"
+    if "core" in tags:
+        return "核心应用模具"
     if "sphere" in tags and "projectile" in tags:
         return "球形弹体"
     if "blade" in tags:
@@ -225,7 +279,15 @@ def _model_result(tags: list[str]) -> str:
 
 
 def _single_element_result(keys: list[str]) -> str:
-    names = {"fire": "火系法术", "water": "水系法术", "wind": "风系法术", "earth": "土系法术", "ether": "以太操作法术"}
+    names = {
+        "fire": "火系法术",
+        "water": "水系法术",
+        "wind": "风系法术",
+        "earth": "土系法术",
+        "ether": "以太操作法术",
+        "chaos": "混沌系法术",
+        "vector": "引力系法术",
+    }
     if not keys:
         return ""
     if len(keys) == 1:
@@ -256,11 +318,56 @@ def _merge_score(score: dict[str, int], bias: dict[str, int]) -> None:
             score[key] += value
 
 
-def _apply_caster(score: dict[str, int], request: CompileGraphRequest) -> dict[str, int]:
-    score["stability"] += request.caster.control // 10 - 5
-    score["mana_efficiency"] += request.caster.focus // 12 - 5
-    score["learnability"] += request.caster.knowledge * 2 - 6
+def _clamp_score(score: dict[str, int]) -> dict[str, int]:
     return {key: max(0, min(100, value)) for key, value in score.items()}
+
+
+def _assess_spell_level(nodes: list[NodeDefinition], compound: CompoundRule | None) -> SpellLevelAssessment:
+    node_tiers = [node.tier for node in nodes]
+    if compound:
+        node_tiers.append(compound.tier)
+    base_tier = max(node_tiers, default=0)
+    difficulty = sum(node.difficulty for node in nodes) + (compound.difficulty if compound else 0)
+    limit = DIFFICULTY_LIMITS[base_tier]
+    raw_bonus = 0
+    if difficulty > limit:
+        raw_bonus = 1 + (difficulty - limit - 1) // DIFFICULTY_STEPS[base_tier]
+    raw_tier = min(10, base_tier + raw_bonus)
+    tier = _cap_tier_by_anchor(base_tier, raw_tier)
+    difficulty_bonus = max(0, tier - base_tier)
+    anchors = [node.name for node in nodes if node.tier == base_tier and base_tier > 0]
+    if compound and compound.tier == base_tier:
+        anchors.append(compound.result)
+    reasons = [
+        f"最高节点等阶为 {base_tier} 阶。",
+        f"节点难度增幅合计 {difficulty}，当前阶容量为 {limit}。",
+    ]
+    if difficulty_bonus:
+        reasons.append(f"难度溢出使法术上浮 {difficulty_bonus} 阶。")
+    if raw_tier != tier:
+        reasons.append("高阶需要本质、体内或领域锚点，已按最高锚点封顶。")
+    if base_tier == 10:
+        reasons.append("领域锚点直接锁定十阶法术尝试。")
+    return SpellLevelAssessment(
+        tier=tier,
+        label=f"{tier}阶",
+        base_tier=base_tier,
+        difficulty=difficulty,
+        difficulty_limit=limit,
+        difficulty_bonus=difficulty_bonus,
+        anchor_nodes=list(dict.fromkeys(anchors)),
+        reasons=reasons,
+    )
+
+
+def _cap_tier_by_anchor(base_tier: int, raw_tier: int) -> int:
+    if base_tier < 7:
+        return min(raw_tier, 6)
+    if base_tier < 9:
+        return min(raw_tier, 8)
+    if base_tier < 10:
+        return min(raw_tier, 9)
+    return raw_tier
 
 
 def _build_radar(score: dict[str, int]) -> list[RadarScore]:
@@ -286,31 +393,32 @@ def _score_reason(key: str, value: int) -> str:
     return "该维度处于可用但仍需优化的区间。"
 
 
-def _name_spell(outcomes: list[StageOutcome]) -> str:
+def _name_spell(outcomes: list[StageOutcome], context: _CompileContext, assessment: SpellLevelAssessment) -> str:
     mold = _outcome(outcomes, "model")
     element = _outcome(outcomes, "purify")
     infusion = _outcome(outcomes, "infuse")
-    if element == "火系法术" and mold == "球形弹体":
-        return "火球术"
     if element == "风系法术" and "刃" in mold and "多重" in infusion:
         return "多重风刃"
     if element == "泥沼系法术":
         return "泥沼术"
     if element == "雷电系法术":
         return "雷电术"
+    fixed_name = fixed_spell_name(context.system, assessment.tier)
+    if fixed_name:
+        return fixed_name
     if element.endswith("法术"):
         return element
     return "未命名法术"
 
 
-def _summarize(outcomes: list[StageOutcome], status: str) -> str:
+def _summarize(outcomes: list[StageOutcome], status: str, assessment: SpellLevelAssessment) -> str:
     chain = " → ".join(outcome.result for outcome in outcomes)
     prefix = "该法术链路可执行" if status == "compiled" else "该法术链路需要审查"
     if status == "failed":
         prefix = "该法术链路无法执行"
     elif status == "unsafe":
         prefix = "该法术链路可形成结果，但高危"
-    return f"{prefix}：{chain}。"
+    return f"{prefix}，判定为{assessment.label}：{chain}。"
 
 
 def _build_card(
@@ -320,6 +428,7 @@ def _build_card(
     outcomes: list[StageOutcome],
     issues: list[CompileIssue],
     risk_tags: list[str],
+    assessment: SpellLevelAssessment,
 ) -> GraphSpellCard:
     return GraphSpellCard(
         title=spell_name,
@@ -329,11 +438,12 @@ def _build_card(
             "四阶段均需形成阶段结果。",
             "灌注必须同时消费开模结果和提纯结果。",
             "释放必须基于已完成的灌注结构。",
+            "法术阶数由最高节点等阶与难度增幅共同评定。",
         ],
         costs=[
-            f"精神力：{request.caster.focus}",
-            f"控制力：{request.caster.control}",
-            f"知识刻度：{request.caster.knowledge}",
+            f"法术等阶：{assessment.label}",
+            f"基础锚点：{assessment.base_tier}阶",
+            f"节点难度增幅：{assessment.difficulty}/{assessment.difficulty_limit}",
         ],
         risks=[RISK_TEXT.get(tag, tag) for tag in sorted(set(risk_tags))],
         suggestions=_suggestions(issues),

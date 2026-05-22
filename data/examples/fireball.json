@@ -7,6 +7,5 @@
     {"stage": "infuse", "nodes": [{"instance_id": "infuse-1", "node_id": "infuse_standard"}]},
     {"stage": "release", "nodes": [{"instance_id": "release-1", "node_id": "release_projectile"}]}
   ],
-  "caster": {"focus": 65, "control": 60, "knowledge": 2},
   "context": {"environment": "训练场"}
 }

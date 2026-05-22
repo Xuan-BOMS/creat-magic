@@ -13,6 +13,5 @@
     {"stage": "infuse", "nodes": [{"instance_id": "infuse-1", "node_id": "infuse_range"}]},
     {"stage": "release", "nodes": [{"instance_id": "release-1", "node_id": "release_diffuse"}]}
   ],
-  "caster": {"focus": 70, "control": 68, "knowledge": 4},
   "context": {"environment": "野外"}
 }

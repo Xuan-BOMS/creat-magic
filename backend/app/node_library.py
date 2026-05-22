@@ -2,6 +2,7 @@ import json
 from functools import lru_cache
 from pathlib import Path
 
+from app.fixed_spell_profiles import get_fixed_spell_examples
 from app.models import CompileGraphRequest, NodeLibrary
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -15,7 +16,11 @@ def get_node_library() -> NodeLibrary:
 
 
 def get_examples() -> list[CompileGraphRequest]:
-    examples: list[CompileGraphRequest] = []
+    examples: list[CompileGraphRequest] = get_fixed_spell_examples()
     for path in sorted(EXAMPLES_PATH.glob("*.json")):
-        examples.append(CompileGraphRequest.model_validate(json.loads(path.read_text(encoding="utf-8"))))
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        if isinstance(payload, list):
+            examples.extend(CompileGraphRequest.model_validate(item) for item in payload)
+        else:
+            examples.append(CompileGraphRequest.model_validate(payload))
     return examples
