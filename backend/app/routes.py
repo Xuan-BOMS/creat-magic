@@ -5,6 +5,7 @@ from app.compiler import compile_spell
 from app.graph_compiler import compile_graph
 from app.models import Catalog, CompileGraphRequest, CompileGraphResult, CompileRequest, CompileResult, NodeLibrary
 from app.node_library import get_examples, get_node_library
+from app.text_library import get_text_bundle
 
 router = APIRouter()
 
@@ -27,6 +28,11 @@ def nodes() -> NodeLibrary:
 @router.get("/examples", response_model=list[CompileGraphRequest])
 def examples() -> list[CompileGraphRequest]:
     return get_examples()
+
+
+@router.get("/texts")
+def texts() -> dict:
+    return get_text_bundle()
 
 
 @router.post("/compile", response_model=CompileResult)

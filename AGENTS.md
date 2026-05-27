@@ -49,25 +49,31 @@ MVP 示例：
 
 ```text
 frontend/src/main.tsx
-  React 工作台：节点库、四阶段画布、检查器、编译结果、示例载入。
+  React 工作台：四阶段构建区、可滑出节点抽屉、编译按钮、法术摘要、六维雷达。
 
 frontend/src/styles.css
-  工作台视觉与响应式布局，对齐 docs/ui/assets/workbench-main-ui-reference.svg。
+  工作台视觉、抽屉滑出/收起、桌面/移动响应式布局、雷达图样式。
 
 backend/app/routes.py
   FastAPI API 入口，挂载 legacy 接口和 MVP 图编译接口。
 
 backend/app/models.py
-  Pydantic 数据契约：节点库、阶段构建、编译请求、编译结果、法术卡。
+  Pydantic 数据契约：节点库、阶段构建、编译请求、编译结果、问题与摘要数据。
 
 backend/app/node_library.py
   读取 JSON 节点库与示例。
 
+backend/app/text_library.py
+  读取集中中文文本包，供后端编译标签、固定法术文本和前端 UI 文案使用。
+
 backend/app/graph_compiler.py
-  四阶段规则内核：阶段校验、节点校验、复合提纯、灌注/释放依赖、风险与评分。
+  四阶段规则内核：阶段校验、节点校验、复合提纯、灌注/释放依赖、风险状态与六维雷达。
 
 data/nodes/mvp_nodes.json
   运行时节点库。
+
+data/texts/zh_cn.json
+  集中中文文本包：前端 UI 文案、编译器显示标签、风险文本、60 个固定法术名称与简介。
 
 data/examples/*.json
   四个可编译示例。
@@ -81,8 +87,18 @@ MVP API：
 ```text
 GET  /api/nodes
 GET  /api/examples
+GET  /api/texts
 POST /api/compile-graph
 ```
+
+## 文本与内容修改入口
+
+- 改 UI 按钮、状态、节点分类标题、阶段说明、雷达标签、风险显示文本：优先改 `data/texts/zh_cn.json`。
+- 改 60 个固定法术的显示名称和简介：改 `data/texts/zh_cn.json` 的 `fixed_spells`。
+- 改节点本体名称、节点标签、节点类型、叠加规则、节点数值：改 `data/nodes/mvp_nodes.json`。
+- 改固定法术的基础签名，即“哪些核心节点组合识别为何种法术”：改 `backend/app/fixed_spell_profiles.py`。
+- 改链路校验、命名兜底、阶级、风险和雷达算法：改 `backend/app/graph_compiler.py`。
+- `data/texts/zh_cn.json` 是 UTF-8 JSON。中文写入后必须回读确认无乱码。
 
 保留 legacy API：
 
@@ -120,10 +136,11 @@ D:\magic\creat-magic\docs\ui\assets\workbench-main-ui-reference.svg
 
 修改主工作台后必须做浏览器验证，至少检查：
 
-- 桌面 1440x900 下四阶段不被右侧检查器遮挡。
+- 桌面 1440x900 下四阶段、摘要区和六维雷达完整可见。
 - 移动窄屏无水平溢出。
 - 中文无乱码。
-- 编译状态、法术名称、简述和六维雷达能正常显示。
+- 滑出节点抽屉可展开/收起，点击步骤只显示对应步骤节点。
+- 雷达图必须显示中间填充面积，且只含六个维度。
 
 ## 延后范围
 

@@ -25,6 +25,16 @@ def test_nodes_endpoint_exposes_mvp_stages() -> None:
     assert {node["name_role"] for node in data["nodes"]} >= {"base", "variant", "buff"}
 
 
+def test_texts_endpoint_exposes_editable_chinese_texts() -> None:
+    response = client.get("/api/texts")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["app"]["brand"]["title"] == "法术生成器"
+    assert data["app"]["selection_classes"]["core"]["label"] == "核心"
+    assert data["compiler"]["radar_labels"]["power"] == "威力"
+    assert data["fixed_spells"]["fixed-fire-1"]["name"] == "火球术"
+
+
 def test_compile_fireball_example() -> None:
     payload = _example("fireball")
     payload.pop("caster", None)

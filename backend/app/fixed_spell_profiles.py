@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from app.models import CompileGraphRequest, NodeDefinition, StageBuild, StageId
+from app.text_library import get_fixed_spell_text, get_system_name
 
 STAGE_ORDER: tuple[StageId, ...] = ("model", "purify", "infuse", "release")
 
@@ -46,6 +47,18 @@ def _profile(system: str, tier: int, name: str, summary: str, model: str, infuse
             "infuse": (infuse,),
             "release": (release,),
         },
+    )
+
+
+def _with_external_text(profile: FixedSpellProfile) -> FixedSpellProfile:
+    name, summary = get_fixed_spell_text(profile.id, profile.name, profile.summary)
+    return FixedSpellProfile(
+        id=profile.id,
+        system=profile.system,
+        source_tier=profile.source_tier,
+        name=name,
+        summary=summary,
+        nodes=profile.nodes,
     )
 
 
@@ -134,16 +147,18 @@ def identify_fixed_spell(stages: list[StageBuild], nodes_by_id: dict[str, NodeDe
     }
     if set(by_stage) != set(STAGE_ORDER):
         return None
-    return SIGNATURE_INDEX.get(tuple((stage, by_stage[stage]) for stage in STAGE_ORDER))
+    profile = SIGNATURE_INDEX.get(tuple((stage, by_stage[stage]) for stage in STAGE_ORDER))
+    return _with_external_text(profile) if profile else None
 
 
 def get_fixed_spell_examples() -> list[CompileGraphRequest]:
     examples: list[CompileGraphRequest] = []
-    for profile in SPELL_PROFILES:
+    for base_profile in SPELL_PROFILES:
+        profile = _with_external_text(base_profile)
         examples.append(
             CompileGraphRequest(
                 id=profile.id,
-                intent=f"{SYSTEM_NAMES[profile.system]}{profile.source_tier}阶固定法术构建",
+                intent=f"{get_system_name(profile.system, SYSTEM_NAMES[profile.system])}{profile.source_tier}阶固定法术构建",
                 stages=[
                     {
                         "stage": stage,

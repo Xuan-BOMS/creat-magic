@@ -18,6 +18,7 @@ from app.models import (
 )
 from app.fixed_spell_profiles import FixedSpellProfile, identify_fixed_spell, system_from_key
 from app.node_library import get_node_library
+from app.text_library import get_compiler_texts
 
 STAGE_ORDER: list[StageId] = ["model", "purify", "infuse", "release"]
 ELEMENT_KEYS = {"fire", "water", "wind", "earth", "ether", "chaos", "vector"}
@@ -88,6 +89,23 @@ RISK_TEXT = {
     "internal_boundary": "体内边界突破",
     "domain_override": "领域统摄失控",
 }
+
+
+def _compiler_text_map(key: str, fallback: dict[str, str]) -> dict[str, str]:
+    value = get_compiler_texts().get(key)
+    return value if isinstance(value, dict) else fallback
+
+
+def _stage_label(stage: StageId) -> str:
+    return _compiler_text_map("stage_labels", STAGE_LABELS).get(stage, stage)
+
+
+def _radar_label(key: str) -> str:
+    return _compiler_text_map("radar_labels", RADAR_LABELS).get(key, key)
+
+
+def _risk_text(tag: str) -> str:
+    return _compiler_text_map("risk_text", RISK_TEXT).get(tag, tag)
 
 
 def compile_graph(request: CompileGraphRequest) -> CompileGraphResult:
@@ -171,16 +189,16 @@ def _validate_request(
     seen_stages: set[StageId] = set()
     for stage in request.stages:
         if stage.stage in seen_stages:
-            issues.append(_issue("stage.duplicate", "error", stage.stage, None, f"{STAGE_LABELS[stage.stage]}阶段重复。", "每个固定阶段只能出现一次。"))
+            issues.append(_issue("stage.duplicate", "error", stage.stage, None, f"{_stage_label(stage.stage)}阶段重复。", "每个固定阶段只能出现一次。"))
         seen_stages.add(stage.stage)
 
     for stage_id in STAGE_ORDER:
         stage = stages.get(stage_id)
         if not stage:
-            issues.append(_issue("stage.missing", "error", stage_id, None, f"缺少{STAGE_LABELS[stage_id]}阶段。", "补齐四个固定阶段后再编译。"))
+            issues.append(_issue("stage.missing", "error", stage_id, None, f"缺少{_stage_label(stage_id)}阶段。", "补齐四个固定阶段后再编译。"))
             continue
         if not stage.nodes:
-            issues.append(_issue("stage.empty", "error", stage_id, None, f"{STAGE_LABELS[stage_id]}阶段没有节点。", "至少放入一个可产生阶段结果的节点。"))
+            issues.append(_issue("stage.empty", "error", stage_id, None, f"{_stage_label(stage_id)}阶段没有节点。", "至少放入一个可产生阶段结果的节点。"))
             continue
         seen: set[str] = set()
         for instance in stage.nodes:
@@ -192,7 +210,7 @@ def _validate_request(
                 issues.append(_issue("node.unknown", "error", stage_id, instance.instance_id, f"未知节点 {instance.node_id}。", "从 /api/nodes 返回的节点库中选择节点。"))
                 continue
             if node.stage != stage_id:
-                issues.append(_issue("node.wrong_stage", "error", stage_id, instance.instance_id, f"节点「{node.name}」不能放在{STAGE_LABELS[stage_id]}阶段。", f"将它移动到{STAGE_LABELS[node.stage]}阶段。"))
+                issues.append(_issue("node.wrong_stage", "error", stage_id, instance.instance_id, f"节点「{node.name}」不能放在{_stage_label(stage_id)}阶段。", f"将它移动到{_stage_label(node.stage)}阶段。"))
     known_stages = {stage.id for stage in library.stages}
     for stage in request.stages:
         if stage.stage not in known_stages:
@@ -212,7 +230,7 @@ def _selection_issues(stages: dict[StageId, StageBuild], nodes_by_id: dict[str, 
                     "error",
                     stage_id,
                     None,
-                    f"{STAGE_LABELS[stage_id]}阶段必须且只能有一个核心节点。",
+                    f"{_stage_label(stage_id)}阶段必须且只能有一个核心节点。",
                     "保留一个决定基础结构的核心节点，再把其他变化放入细节或调节节点。",
                 )
             )
@@ -223,7 +241,7 @@ def _selection_issues(stages: dict[StageId, StageBuild], nodes_by_id: dict[str, 
                     "error",
                     stage_id,
                     core_instances[1].instance_id,
-                    f"{STAGE_LABELS[stage_id]}阶段核心节点过多。",
+                    f"{_stage_label(stage_id)}阶段核心节点过多。",
                     "同一阶段只能选择一个不可叠加核心节点。",
                 )
             )
@@ -287,7 +305,7 @@ def _compile_stage(stage_id: StageId, stage: StageBuild, nodes_by_id: dict[str, 
         result = f"{release}完成"
     return StageOutcome(
         stage=stage_id,
-        label=STAGE_LABELS[stage_id],
+        label=_stage_label(stage_id),
         result=result or "未形成结果",
         node_instance_ids=[instance.instance_id for instance in stage.nodes],
         tags=list(dict.fromkeys(tag for node in definitions for tag in node.tags)),
@@ -311,7 +329,7 @@ def _risk_issues(risk_tags: Iterable[str]) -> list[CompileIssue]:
     issues: list[CompileIssue] = []
     for tag in sorted(set(risk_tags)):
         severity = "unsafe" if tag in {"high_voltage", "governance_review"} else "warning"
-        issues.append(_issue(f"risk.{tag}", severity, None, None, RISK_TEXT.get(tag, tag), "编译可继续，但需要在结果中标记并处理该风险。"))
+        issues.append(_issue(f"risk.{tag}", severity, None, None, _risk_text(tag), "编译可继续，但需要在结果中标记并处理该风险。"))
     return issues
 
 
@@ -474,7 +492,7 @@ def _build_radar(score: dict[str, int]) -> list[RadarScore]:
     for key in RADAR_LABELS:
         value = 100 - score[key] if key in {"learnability", "mana_efficiency"} else score[key]
         direction = "higher_worse" if key in {"learnability", "mana_efficiency"} else "higher_better"
-        radar.append(RadarScore(key=key, label=RADAR_LABELS[key], value=value, direction=direction, reason=_score_reason(key, value)))
+        radar.append(RadarScore(key=key, label=_radar_label(key), value=value, direction=direction, reason=_score_reason(key, value)))
     return radar
 
 
@@ -584,7 +602,7 @@ def _build_card(
             f"基础锚点：{assessment.base_tier}阶",
             f"节点难度增幅：{assessment.difficulty}/{assessment.difficulty_limit}",
         ],
-        risks=[RISK_TEXT.get(tag, tag) for tag in sorted(set(risk_tags))],
+        risks=[_risk_text(tag) for tag in sorted(set(risk_tags))],
         suggestions=_suggestions(issues),
     )
 

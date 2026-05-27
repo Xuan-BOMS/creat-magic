@@ -8,6 +8,24 @@ type Status = "compiled" | "partial" | "failed" | "unsafe";
 type NodeSelectionClass = "core" | "detail" | "tuning";
 type NodeNameRole = "base" | "variant" | "buff" | "none";
 
+type AppTexts = {
+  brand: { eyebrow: string; title: string };
+  actions: { compile: string; compiling: string; compact: string; detail: string };
+  aria: { collapse_drawer: string; expand_drawer: string; example_select: string; move_up: string; move_down: string; delete: string; radar: string };
+  errors: { api_unavailable: string; compile_failed: string };
+  examples: { free_build: string; fallback: string; tier_suffix: string };
+  loading: { nodes: string };
+  node: { drawer_title: string; selected: string; count_suffix: string; difficulty: string; tier_suffix: string; tag_separator: string };
+  result: { title: string; pending_spell: string; hint: string; anchor: string; difficulty: string; overflow: string };
+  selection_classes: Record<NodeSelectionClass, { label: string; hint: string }>;
+  stage_purpose: Record<StageId, string>;
+  status: Record<Status | "pending", string>;
+};
+
+type TextBundle = {
+  app: AppTexts;
+};
+
 type StageDefinition = {
   id: StageId;
   name: string;
@@ -86,16 +104,10 @@ const API_BASE = import.meta.env.VITE_API_BASE ?? "http://127.0.0.1:8000";
 const storageKey = "spell-graph-builder-state";
 const nodeViewModeKey = "spell-node-drawer-compact";
 const selectionOrder: NodeSelectionClass[] = ["core", "detail", "tuning"];
-const selectionMeta = {
-  core: { label: "核心", hint: "单选，决定法术大类", Icon: CircleDot },
-  detail: { label: "变形", hint: "可多选，同种一次", Icon: Layers3 },
-  tuning: { label: "调节", hint: "可重复叠加", Icon: SlidersHorizontal },
-} satisfies Record<NodeSelectionClass, { label: string; hint: string; Icon: typeof CircleDot }>;
-const stagePurposeText: Record<StageId, string> = {
-  model: "建立法术的承载结构。",
-  purify: "选择元素或以太倾向。",
-  infuse: "把提纯结果注入结构。",
-  release: "执行完整法术结构。",
+const selectionIcons: Record<NodeSelectionClass, typeof CircleDot> = {
+  core: CircleDot,
+  detail: Layers3,
+  tuning: SlidersHorizontal,
 };
 
 const defaultBuild: CompileRequest = {
@@ -119,11 +131,15 @@ function App() {
   const [drawerOpen, setDrawerOpen] = React.useState(() => window.innerWidth > 980);
   const [examples, setExamples] = React.useState<CompileRequest[]>([]);
   const [result, setResult] = React.useState<CompileResult | null>(null);
+  const [texts, setTexts] = React.useState<AppTexts | null>(null);
   const [loading, setLoading] = React.useState(false);
   const [apiError, setApiError] = React.useState("");
   const [compactNodes, setCompactNodes] = React.useState(() => localStorage.getItem(nodeViewModeKey) !== "detail");
 
   React.useEffect(() => {
+    fetchJson<TextBundle>("/api/texts")
+      .then((bundle) => setTexts(bundle.app))
+      .catch(() => setApiError("无法连接后端 API。"));
     fetchJson<NodeLibrary>("/api/nodes")
       .then(setLibrary)
       .catch(() => setApiError("无法连接后端 API。"));
@@ -141,10 +157,10 @@ function App() {
   }, [compactNodes]);
 
   React.useEffect(() => {
-    if (library && !result) {
+    if (library && texts && !result) {
       void compile(build);
     }
-  }, [library]);
+  }, [library, texts]);
 
   const nodeMap = React.useMemo(() => new Map(library?.nodes.map((node) => [node.id, node]) ?? []), [library]);
   const activeStage = library?.stages.find((stage) => stage.id === activeStageId);
@@ -152,6 +168,7 @@ function App() {
   const activeStageBuild = build.stages.find((stage) => stage.stage === activeStageId);
   const activeNodeCounts = React.useMemo(() => countSelectedNodes(activeStageBuild?.nodes ?? []), [activeStageBuild]);
   const groupedActiveNodes = React.useMemo(() => groupPickerNodes(activeNodes), [activeNodes]);
+  const selectionMeta = React.useMemo(() => (texts ? buildSelectionMeta(texts) : null), [texts]);
 
   async function compile(current = build) {
     setLoading(true);
@@ -165,7 +182,7 @@ function App() {
       if (!response.ok) throw new Error(await response.text());
       setResult((await response.json()) as CompileResult);
     } catch (error) {
-      setApiError(error instanceof Error ? error.message : "编译请求失败。");
+      setApiError(error instanceof Error ? error.message : texts?.errors.compile_failed ?? "编译请求失败。");
     } finally {
       setLoading(false);
     }
@@ -238,10 +255,10 @@ function App() {
     void compile(example);
   }
 
-  if (!library) {
+  if (!library || !texts || !selectionMeta) {
     return (
       <main className="loading">
-        <span>正在载入节点库</span>
+        <span>{texts?.loading.nodes ?? "正在载入节点库"}</span>
         {apiError && <strong>{apiError}</strong>}
       </main>
     );
@@ -250,24 +267,24 @@ function App() {
   return (
     <main className={drawerOpen ? "app drawer-open" : "app drawer-closed"}>
       <header className="topbar">
-        <button className="drawer-toggle" onClick={() => setDrawerOpen((value) => !value)} aria-label={drawerOpen ? "收起节点栏" : "展开节点栏"}>
+        <button className="drawer-toggle" onClick={() => setDrawerOpen((value) => !value)} aria-label={drawerOpen ? texts.aria.collapse_drawer : texts.aria.expand_drawer}>
           {drawerOpen ? <X size={19} /> : <Menu size={19} />}
         </button>
         <div className="brand">
-          <span>轰界</span>
-          <h1>法术生成器</h1>
+          <span>{texts.brand.eyebrow}</span>
+          <h1>{texts.brand.title}</h1>
         </div>
-        <select className="example-select" value={build.id ?? ""} onChange={(event) => loadExample(event.target.value)} aria-label="选择固定法术示例">
-          <option value="">自由构建</option>
+        <select className="example-select" value={build.id ?? ""} onChange={(event) => loadExample(event.target.value)} aria-label={texts.aria.example_select}>
+          <option value="">{texts.examples.free_build}</option>
           {examples.map((example) => (
             <option key={example.id} value={example.id}>
-              {exampleLabel(example)}
+              {exampleLabel(example, texts)}
             </option>
           ))}
         </select>
         <button className="compile-button" onClick={() => compile()} disabled={loading}>
           <Play size={17} />
-          {loading ? "编译中" : "编译"}
+          {loading ? texts.actions.compiling : texts.actions.compile}
         </button>
       </header>
 
@@ -275,12 +292,12 @@ function App() {
         <aside className="node-drawer">
           <div className="drawer-head">
             <div>
-              <span>节点</span>
+              <span>{texts.node.drawer_title}</span>
               <strong>{activeStage?.name}</strong>
-              <p>{stagePurpose(activeStage)}</p>
+              <p>{stagePurpose(activeStage, texts)}</p>
             </div>
             <button className="node-mode-toggle" onClick={() => setCompactNodes((value) => !value)} aria-pressed={!compactNodes}>
-              {compactNodes ? "简略" : "详细"}
+              {compactNodes ? texts.actions.compact : texts.actions.detail}
             </button>
           </div>
           <div className="stage-tabs">
@@ -315,18 +332,19 @@ function App() {
                           key={node.id}
                           onClick={() => addNode(node)}
                           disabled={disabled}
-                          title={`${node.name}，${node.tier}阶，难度 +${node.difficulty}`}
+                          title={`${node.name}，${node.tier}${texts.node.tier_suffix}，${texts.node.difficulty} +${node.difficulty}`}
                         >
                           <Plus size={14} />
                           <span>
                             <b>
                               {node.name}
-                              {selected && <i>{node.selection_class === "tuning" ? `x${count}` : "已选"}</i>}
+                              {selected && <i>{node.selection_class === "tuning" ? `x${count}` : texts.node.selected}</i>}
                             </b>
                             <small>
-                              {selectionMeta[node.selection_class].label} / {node.tier}阶 / 难度 +{node.difficulty}
+                              {selectionMeta[node.selection_class].label} / {node.tier}
+                              {texts.node.tier_suffix} / {texts.node.difficulty} +{node.difficulty}
                             </small>
-                            {node.tags.length > 0 && <em>{node.tags.slice(0, 3).join(" · ")}</em>}
+                            {node.tags.length > 0 && <em>{node.tags.slice(0, 3).join(texts.node.tag_separator)}</em>}
                           </span>
                         </button>
                       );
@@ -351,10 +369,12 @@ function App() {
                       <span className="stage-index">{String(index + 1).padStart(2, "0")}</span>
                       <span className="stage-title-copy">
                         <strong>{stage.name}</strong>
-                        <small>{nodeCount} 个节点</small>
+                        <small>
+                          {nodeCount} {texts.node.count_suffix}
+                        </small>
                       </span>
                     </button>
-                    <div className="stage-result">{outcomeFor(result, stage.id) ?? stagePurpose(stage)}</div>
+                    <div className="stage-result">{outcomeFor(result, stage.id) ?? stagePurpose(stage, texts)}</div>
                     <div className="stage-nodes">
                       {displayNodes.map((entry, nodeIndex) => {
                         const { node, instances } = entry;
@@ -371,18 +391,19 @@ function App() {
                               {grouped && <em>x{instances.length}</em>}
                               {node && (
                                 <small>
-                                  {selectionMeta[node.selection_class].label} / {node.tier}阶 +{node.difficulty}
+                                  {selectionMeta[node.selection_class].label} / {node.tier}
+                                  {texts.node.tier_suffix} +{node.difficulty}
                                 </small>
                               )}
                             </strong>
                             <div className="node-actions">
-                              <button onClick={() => moveNode(stage.id, instance.instance_id, -1)} disabled={grouped || nodeIndex === 0} aria-label="上移">
+                              <button onClick={() => moveNode(stage.id, instance.instance_id, -1)} disabled={grouped || nodeIndex === 0} aria-label={texts.aria.move_up}>
                                 <ArrowUp size={13} />
                               </button>
-                              <button onClick={() => moveNode(stage.id, instance.instance_id, 1)} disabled={grouped || nodeIndex === displayNodes.length - 1} aria-label="下移">
+                              <button onClick={() => moveNode(stage.id, instance.instance_id, 1)} disabled={grouped || nodeIndex === displayNodes.length - 1} aria-label={texts.aria.move_down}>
                                 <ArrowDown size={13} />
                               </button>
-                              <button onClick={() => (grouped ? removeNodes(stage.id, instances.map((item) => item.instance_id)) : removeNode(stage.id, instance.instance_id))} aria-label="删除">
+                              <button onClick={() => (grouped ? removeNodes(stage.id, instances.map((item) => item.instance_id)) : removeNode(stage.id, instance.instance_id))} aria-label={texts.aria.delete}>
                                 <Trash2 size={13} />
                               </button>
                             </div>
@@ -400,18 +421,25 @@ function App() {
           <section className="compile-output">
             <div className="result-copy">
               <div className="result-head">
-                <span className={`status ${result?.status ?? "pending"}`}>{statusText(result?.status)}</span>
-                <span>编译结果</span>
+                <span className={`status ${result?.status ?? "pending"}`}>{statusText(result?.status, texts)}</span>
+                <span>{texts.result.title}</span>
               </div>
-              <h2>{result?.spell_name ?? "待编译法术"}</h2>
+              <h2>{result?.spell_name ?? texts.result.pending_spell}</h2>
               {result && (
                 <div className="tier-strip">
                   <strong>{result.spell_level.label}</strong>
-                  <span>锚点 {result.spell_level.base_tier}阶</span>
                   <span>
-                    难度 {result.spell_level.difficulty}/{result.spell_level.difficulty_limit}
+                    {texts.result.anchor} {result.spell_level.base_tier}
+                    {texts.node.tier_suffix}
                   </span>
-                  {result.spell_level.difficulty_bonus > 0 && <span>溢出 +{result.spell_level.difficulty_bonus}</span>}
+                  <span>
+                    {texts.result.difficulty} {result.spell_level.difficulty}/{result.spell_level.difficulty_limit}
+                  </span>
+                  {result.spell_level.difficulty_bonus > 0 && (
+                    <span>
+                      {texts.result.overflow} +{result.spell_level.difficulty_bonus}
+                    </span>
+                  )}
                 </div>
               )}
               {result && result.modifiers.length > 0 && (
@@ -424,7 +452,7 @@ function App() {
                   ))}
                 </div>
               )}
-              <p>{apiError || result?.summary || "点击步骤选择节点，完成四步后编译。"}</p>
+              <p>{apiError || result?.summary || texts.result.hint}</p>
               {result && (
                 <ul className="tier-reasons">
                   {result.spell_level.reasons.map((reason) => (
@@ -433,7 +461,7 @@ function App() {
                 </ul>
               )}
             </div>
-            {result && <RadarChart scores={result.radar} />}
+            {result && <RadarChart scores={result.radar} ariaLabel={texts.aria.radar} />}
           </section>
         </section>
       </section>
@@ -490,26 +518,35 @@ function outcomeFor(result: CompileResult | null, stage: StageId) {
   return result?.stage_outcomes.find((outcome) => outcome.stage === stage)?.result;
 }
 
-function stagePurpose(stage?: StageDefinition) {
-  return stage ? stagePurposeText[stage.id] : "";
+function buildSelectionMeta(texts: AppTexts) {
+  return selectionOrder.reduce(
+    (meta, selectionClass) => ({
+      ...meta,
+      [selectionClass]: {
+        ...texts.selection_classes[selectionClass],
+        Icon: selectionIcons[selectionClass],
+      },
+    }),
+    {} as Record<NodeSelectionClass, { label: string; hint: string; Icon: typeof CircleDot }>,
+  );
 }
 
-function statusText(status?: Status) {
-  if (status === "compiled") return "合法";
-  if (status === "unsafe") return "高危";
-  if (status === "failed") return "失败";
-  if (status === "partial") return "部分";
-  return "待编译";
+function stagePurpose(stage: StageDefinition | undefined, texts: AppTexts) {
+  return stage ? texts.stage_purpose[stage.id] : "";
 }
 
-function exampleLabel(example: CompileRequest) {
+function statusText(status: Status | undefined, texts: AppTexts) {
+  return texts.status[status ?? "pending"];
+}
+
+function exampleLabel(example: CompileRequest, texts: AppTexts) {
   const tier = example.context.expected_tier;
   const name = example.context.expected_spell_name;
-  if (typeof tier === "number" && typeof name === "string") return `${tier}阶 ${name}`;
-  return example.id ?? "示例";
+  if (typeof tier === "number" && typeof name === "string") return `${tier}${texts.examples.tier_suffix} ${name}`;
+  return example.id ?? texts.examples.fallback;
 }
 
-function RadarChart({ scores }: { scores: CompileResult["radar"] }) {
+function RadarChart({ scores, ariaLabel }: { scores: CompileResult["radar"]; ariaLabel: string }) {
   const center = 140;
   const radius = 82;
   const levels = [0.25, 0.5, 0.75, 1];
@@ -517,7 +554,7 @@ function RadarChart({ scores }: { scores: CompileResult["radar"] }) {
 
   return (
     <div className="radar-wrap">
-      <svg className="radar" viewBox="0 0 280 280" role="img" aria-label="六维雷达图">
+      <svg className="radar" viewBox="0 0 280 280" role="img" aria-label={ariaLabel}>
         {levels.map((level) => (
           <polygon className="radar-grid" key={level} points={scores.map((_, index) => pointString(pointFor(index, scores.length, center, radius * level))).join(" ")} />
         ))}
