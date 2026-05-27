@@ -174,7 +174,7 @@ select:focus-visible {
   display: grid;
   grid-template-rows: auto auto minmax(0, 1fr);
   overflow: hidden;
-  background: rgba(255, 254, 250, 0.96);
+  background: var(--surface);
   border-right: 1px solid var(--line);
   box-shadow: 18px 0 38px rgba(21, 28, 25, 0.14);
   transition: transform 190ms ease, opacity 170ms ease;
@@ -291,8 +291,46 @@ select:focus-visible {
 }
 
 .node-picker.compact {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
+}
+
+.node-group {
+  display: grid;
+  gap: 8px;
+}
+
+.node-group + .node-group {
+  padding-top: 4px;
+  border-top: 1px solid rgba(216, 222, 216, 0.72);
+}
+
+.node-group-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  color: var(--ink-2);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.node-group-title small {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.node-group-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.node-picker.compact .node-group-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .pick-node {
@@ -339,6 +377,29 @@ select:focus-visible {
   font-weight: 900;
 }
 
+.pick-node b {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pick-node i,
+.work-node em {
+  flex: 0 0 auto;
+  border-radius: 6px;
+  background: rgba(20, 25, 29, 0.08);
+  color: var(--ink-2);
+  padding: 2px 5px;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 900;
+}
+
 .node-picker.compact .pick-node span {
   display: block;
   overflow: hidden;
@@ -360,6 +421,34 @@ select:focus-visible {
   font-style: normal;
   font-weight: 600;
   line-height: 1.35;
+}
+
+.pick-node.selection-core,
+.work-node.selection-core {
+  background: linear-gradient(180deg, #fffdf6, #fff8e5);
+}
+
+.pick-node.selection-detail,
+.work-node.selection-detail {
+  background: linear-gradient(180deg, #ffffff, #eef8f5);
+}
+
+.pick-node.selection-tuning,
+.work-node.selection-tuning {
+  background: linear-gradient(180deg, #ffffff, #f5f1ff);
+  border-style: dashed;
+}
+
+.selection-core .node-group-title {
+  color: #9b6e1d;
+}
+
+.selection-detail .node-group-title {
+  color: var(--teal);
+}
+
+.selection-tuning .node-group-title {
+  color: var(--violet);
 }
 
 .model {
@@ -536,11 +625,17 @@ select:focus-visible {
 
 .work-node strong {
   min-width: 0;
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 3px;
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: 15px;
+}
+
+.work-node strong small {
+  flex-basis: 100%;
 }
 
 .node-actions {
@@ -642,8 +737,16 @@ select:focus-visible {
   margin: 10px 0;
 }
 
+.modifier-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 8px 0 10px;
+}
+
 .tier-strip strong,
-.tier-strip span {
+.tier-strip span,
+.modifier {
   display: inline-flex;
   align-items: center;
   min-height: 28px;
@@ -661,6 +764,23 @@ select:focus-visible {
 .tier-strip span {
   background: rgba(255, 255, 255, 0.08);
   color: rgba(249, 245, 233, 0.86);
+}
+
+.modifier {
+  gap: 6px;
+  color: #fffdf7;
+}
+
+.modifier.variant {
+  background: rgba(36, 125, 117, 0.46);
+}
+
+.modifier.buff {
+  background: rgba(113, 102, 148, 0.56);
+}
+
+.modifier b {
+  color: #f2d28f;
 }
 
 .tier-reasons {

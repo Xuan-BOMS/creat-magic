@@ -16,11 +16,13 @@ def test_nodes_endpoint_exposes_mvp_stages() -> None:
     response = client.get("/api/nodes")
     assert response.status_code == 200
     data = response.json()
-    assert data["version"] == "mvp-0.1"
+    assert data["version"] == "mvp-0.2"
     assert [stage["id"] for stage in data["stages"]] == ["model", "purify", "infuse", "release"]
     assert {node["stage"] for node in data["nodes"]} == {"model", "purify", "infuse", "release"}
     assert all(isinstance(node["tier"], int) for node in data["nodes"])
     assert all(isinstance(node["difficulty"], int) for node in data["nodes"])
+    assert {node["selection_class"] for node in data["nodes"]} == {"core", "detail", "tuning"}
+    assert {node["name_role"] for node in data["nodes"]} >= {"base", "variant", "buff"}
 
 
 def test_compile_fireball_example() -> None:
@@ -69,20 +71,20 @@ def test_compile_lightning_example_is_unsafe() -> None:
 def test_difficulty_overflow_can_raise_above_highest_node_tier() -> None:
     payload = _example("fireball")
     payload.pop("caster", None)
-    payload["stages"][2]["nodes"].extend(
+    payload["stages"][3]["nodes"].extend(
         [
-            {"instance_id": "infuse-extra-1", "node_id": "infuse_standard"},
-            {"instance_id": "infuse-extra-2", "node_id": "infuse_standard"},
-            {"instance_id": "infuse-extra-3", "node_id": "infuse_standard"},
+            {"instance_id": f"release-speed-{index}", "node_id": "release_faster"}
+            for index in range(6)
         ]
     )
     response = client.post("/api/compile-graph", json=payload)
     assert response.status_code == 200
     data = response.json()
-    assert data["spell_name"] == "未定义火系法术"
+    assert data["spell_name"] == "火球术"
     assert data["spell_level"]["base_tier"] == 1
     assert data["spell_level"]["tier"] > 1
     assert data["spell_level"]["difficulty_bonus"] > 0
+    assert next(item for item in data["modifiers"] if item["key"] == "release.speed.up")["count"] == 6
 
 
 def test_domain_node_locks_spell_to_tenth_tier() -> None:
@@ -138,6 +140,50 @@ def test_fixed_spell_name_comes_from_node_signature_not_context() -> None:
     data = response.json()
     assert data["spell_name"] == "火球术"
     assert data["spell_level"]["tier"] == 1
+
+
+def test_fixed_spell_identity_ignores_variant_and_buff_nodes() -> None:
+    payload = _example("fixed-fire-1")
+    payload["stages"][0]["nodes"].append({"instance_id": "model-detail-1", "node_id": "model_expanded"})
+    payload["stages"][3]["nodes"].extend(
+        [
+            {"instance_id": "release-detail-1", "node_id": "release_curve_left"},
+            {"instance_id": "release-buff-1", "node_id": "release_faster"},
+            {"instance_id": "release-buff-2", "node_id": "release_faster"},
+        ]
+    )
+    response = client.post("/api/compile-graph", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] != "failed"
+    assert data["spell_name"] == "膨胀左弯火球术"
+    assert any(item["label"] == "膨胀" and item["kind"] == "variant" for item in data["modifiers"])
+    assert next(item for item in data["modifiers"] if item["key"] == "release.speed.up")["count"] == 2
+
+
+def test_unregistered_base_signature_displays_placeholder_name() -> None:
+    payload = _example("fireball")
+    payload["stages"][3]["nodes"][0]["node_id"] = "release_flow"
+    response = client.post("/api/compile-graph", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] != "failed"
+    assert data["spell_name"] == "暂无"
+
+
+def test_compile_graph_rejects_duplicate_detail_node() -> None:
+    payload = _example("fireball")
+    payload["stages"][0]["nodes"].extend(
+        [
+            {"instance_id": "model-detail-1", "node_id": "model_expanded"},
+            {"instance_id": "model-detail-2", "node_id": "model_expanded"},
+        ]
+    )
+    response = client.post("/api/compile-graph", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "failed"
+    assert any(issue["rule_id"] == "selection.detail_duplicate" for issue in data["issues"])
 
 
 def test_compile_graph_rejects_empty_stage() -> None:

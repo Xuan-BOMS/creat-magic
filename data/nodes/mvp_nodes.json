@@ -1,5 +1,5 @@
 {
-  "version": "mvp-0.1",
+  "version": "mvp-0.2",
   "stages": [
     {
       "id": "model",
@@ -46,7 +46,13 @@
         "mana_efficiency": 4,
         "versatility": 8,
         "academic_value": 2
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_line",
@@ -70,7 +76,13 @@
         "mana_efficiency": 4,
         "versatility": 5,
         "academic_value": 3
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_wall",
@@ -97,7 +109,13 @@
         "mana_efficiency": 2,
         "versatility": 5,
         "academic_value": 3
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_blade",
@@ -124,7 +142,13 @@
         "mana_efficiency": 4,
         "versatility": 4,
         "academic_value": 4
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_ring",
@@ -152,7 +176,13 @@
         "mana_efficiency": 2,
         "versatility": 5,
         "academic_value": 4
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_cage",
@@ -180,7 +210,13 @@
         "mana_efficiency": 1,
         "versatility": 6,
         "academic_value": 4
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_chunk",
@@ -208,7 +244,13 @@
         "mana_efficiency": 2,
         "versatility": 5,
         "academic_value": 2
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_probe",
@@ -236,7 +278,13 @@
         "mana_efficiency": 1,
         "versatility": 8,
         "academic_value": 6
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_core_application",
@@ -260,7 +308,13 @@
         "mana_efficiency": 2,
         "versatility": 6,
         "academic_value": 4
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_focused",
@@ -286,7 +340,13 @@
         "mana_efficiency": -3,
         "versatility": 4,
         "academic_value": 5
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_area",
@@ -312,7 +372,13 @@
         "mana_efficiency": -2,
         "versatility": 6,
         "academic_value": 5
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_reinforcement",
@@ -340,7 +406,13 @@
         "mana_efficiency": -1,
         "versatility": 7,
         "academic_value": 6
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_target",
@@ -368,7 +440,13 @@
         "mana_efficiency": -1,
         "versatility": 8,
         "academic_value": 6
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_adaptive",
@@ -394,7 +472,13 @@
         "mana_efficiency": -4,
         "versatility": 8,
         "academic_value": 7
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_branching",
@@ -422,7 +506,13 @@
         "mana_efficiency": -5,
         "versatility": 8,
         "academic_value": 8
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_mass",
@@ -450,7 +540,13 @@
         "mana_efficiency": -2,
         "versatility": 9,
         "academic_value": 7
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_guidance",
@@ -478,7 +574,13 @@
         "mana_efficiency": -3,
         "versatility": 9,
         "academic_value": 8
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_field_shell",
@@ -506,7 +608,13 @@
         "mana_efficiency": -3,
         "versatility": 10,
         "academic_value": 9
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_large_area",
@@ -534,7 +642,13 @@
         "mana_efficiency": -8,
         "versatility": 6,
         "academic_value": 8
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_vortex",
@@ -563,7 +677,13 @@
         "mana_efficiency": -4,
         "versatility": 7,
         "academic_value": 8
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_binding_shell",
@@ -592,7 +712,13 @@
         "mana_efficiency": -6,
         "versatility": 7,
         "academic_value": 8
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_spell_process",
@@ -621,7 +747,13 @@
         "mana_efficiency": -5,
         "versatility": 9,
         "academic_value": 10
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_existing_target",
@@ -648,7 +780,13 @@
         "mana_efficiency": -6,
         "versatility": 9,
         "academic_value": 9
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_conversion_cube",
@@ -676,7 +814,13 @@
         "mana_efficiency": -7,
         "versatility": 11,
         "academic_value": 11
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_essence",
@@ -702,7 +846,13 @@
         "mana_efficiency": -7,
         "versatility": 9,
         "academic_value": 12
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_origin",
@@ -728,7 +878,13 @@
         "mana_efficiency": -9,
         "versatility": 10,
         "academic_value": 14
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_internal",
@@ -756,7 +912,13 @@
         "mana_efficiency": -12,
         "versatility": 4,
         "academic_value": 16
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "model_domain",
@@ -784,7 +946,13 @@
         "mana_efficiency": -18,
         "versatility": 10,
         "academic_value": 20
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "purify_fire",
@@ -810,7 +978,13 @@
         "mana_efficiency": 3,
         "versatility": 5,
         "academic_value": 4
-      }
+      },
+      "selection_class": "detail",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "purify_water",
@@ -837,7 +1011,13 @@
         "mana_efficiency": 5,
         "versatility": 7,
         "academic_value": 4
-      }
+      },
+      "selection_class": "detail",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "purify_wind",
@@ -863,7 +1043,13 @@
         "mana_efficiency": 6,
         "versatility": 7,
         "academic_value": 5
-      }
+      },
+      "selection_class": "detail",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "purify_earth",
@@ -889,7 +1075,13 @@
         "mana_efficiency": -2,
         "versatility": 5,
         "academic_value": 4
-      }
+      },
+      "selection_class": "detail",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "purify_chaos",
@@ -917,7 +1109,13 @@
         "mana_efficiency": -5,
         "versatility": 10,
         "academic_value": 9
-      }
+      },
+      "selection_class": "detail",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "purify_vector",
@@ -945,7 +1143,13 @@
         "mana_efficiency": -5,
         "versatility": 10,
         "academic_value": 9
-      }
+      },
+      "selection_class": "detail",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "purify_ether",
@@ -972,7 +1176,13 @@
         "mana_efficiency": -5,
         "versatility": 10,
         "academic_value": 9
-      }
+      },
+      "selection_class": "detail",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_standard",
@@ -996,7 +1206,13 @@
         "mana_efficiency": 6,
         "versatility": 7,
         "academic_value": 2
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_maintain",
@@ -1023,7 +1239,13 @@
         "mana_efficiency": -2,
         "versatility": 6,
         "academic_value": 4
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_compress",
@@ -1050,7 +1272,13 @@
         "mana_efficiency": -6,
         "versatility": 3,
         "academic_value": 5
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_range",
@@ -1077,7 +1305,13 @@
         "mana_efficiency": -3,
         "versatility": 6,
         "academic_value": 6
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_multi",
@@ -1104,7 +1338,13 @@
         "mana_efficiency": -8,
         "versatility": 6,
         "academic_value": 7
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_adapt",
@@ -1131,7 +1371,13 @@
         "mana_efficiency": -5,
         "versatility": 9,
         "academic_value": 8
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_flow_layer",
@@ -1159,7 +1405,13 @@
         "mana_efficiency": -1,
         "versatility": 7,
         "academic_value": 8
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_reinforce",
@@ -1187,7 +1439,13 @@
         "mana_efficiency": -2,
         "versatility": 8,
         "academic_value": 7
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_vector_multi",
@@ -1215,7 +1473,13 @@
         "mana_efficiency": -4,
         "versatility": 9,
         "academic_value": 8
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_adhesion",
@@ -1243,7 +1507,13 @@
         "mana_efficiency": -2,
         "versatility": 9,
         "academic_value": 8
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_propagate",
@@ -1271,7 +1541,13 @@
         "mana_efficiency": -5,
         "versatility": 8,
         "academic_value": 8
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_permeate",
@@ -1299,7 +1575,13 @@
         "mana_efficiency": -4,
         "versatility": 10,
         "academic_value": 9
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_accelerate",
@@ -1328,7 +1610,13 @@
         "mana_efficiency": -4,
         "versatility": 9,
         "academic_value": 8
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_structure",
@@ -1356,7 +1644,13 @@
         "mana_efficiency": -4,
         "versatility": 11,
         "academic_value": 9
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_mimic",
@@ -1385,7 +1679,13 @@
         "mana_efficiency": -3,
         "versatility": 12,
         "academic_value": 11
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_vector_field",
@@ -1413,7 +1713,13 @@
         "mana_efficiency": -4,
         "versatility": 11,
         "academic_value": 10
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_high_efficiency",
@@ -1441,7 +1747,13 @@
         "mana_efficiency": 4,
         "versatility": 8,
         "academic_value": 10
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_condense",
@@ -1470,7 +1782,13 @@
         "mana_efficiency": -7,
         "versatility": 8,
         "academic_value": 10
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_intrusion",
@@ -1498,7 +1816,13 @@
         "mana_efficiency": -6,
         "versatility": 10,
         "academic_value": 11
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_countermagic",
@@ -1527,7 +1851,13 @@
         "mana_efficiency": -6,
         "versatility": 11,
         "academic_value": 12
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_existing_control",
@@ -1555,7 +1885,13 @@
         "mana_efficiency": -7,
         "versatility": 10,
         "academic_value": 11
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_conversion",
@@ -1583,7 +1919,13 @@
         "mana_efficiency": -7,
         "versatility": 12,
         "academic_value": 12
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_essence_control",
@@ -1610,7 +1952,13 @@
         "mana_efficiency": -8,
         "versatility": 11,
         "academic_value": 14
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_temperature_shift",
@@ -1639,7 +1987,13 @@
         "mana_efficiency": -8,
         "versatility": 12,
         "academic_value": 15
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_liquid_composition",
@@ -1668,7 +2022,13 @@
         "mana_efficiency": -8,
         "versatility": 13,
         "academic_value": 15
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_gas_selection",
@@ -1697,7 +2057,13 @@
         "mana_efficiency": -8,
         "versatility": 13,
         "academic_value": 15
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_solid_generation",
@@ -1726,7 +2092,13 @@
         "mana_efficiency": -8,
         "versatility": 12,
         "academic_value": 15
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_matter_transmutation",
@@ -1755,7 +2127,13 @@
         "mana_efficiency": -9,
         "versatility": 14,
         "academic_value": 16
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_vector_guidance",
@@ -1783,7 +2161,13 @@
         "mana_efficiency": -8,
         "versatility": 13,
         "academic_value": 15
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_origin_formula",
@@ -1810,7 +2194,13 @@
         "mana_efficiency": -10,
         "versatility": 11,
         "academic_value": 16
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_energy_seed",
@@ -1839,7 +2229,13 @@
         "mana_efficiency": -10,
         "versatility": 12,
         "academic_value": 17
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_humidity_state",
@@ -1868,7 +2264,13 @@
         "mana_efficiency": -10,
         "versatility": 14,
         "academic_value": 17
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_kinetic_seed",
@@ -1897,7 +2299,13 @@
         "mana_efficiency": -10,
         "versatility": 13,
         "academic_value": 17
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_matter_seed",
@@ -1926,7 +2334,13 @@
         "mana_efficiency": -10,
         "versatility": 13,
         "academic_value": 17
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_chaos_fusion",
@@ -1955,7 +2369,13 @@
         "mana_efficiency": -11,
         "versatility": 15,
         "academic_value": 18
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_spirit_guidance",
@@ -1984,7 +2404,13 @@
         "mana_efficiency": -11,
         "versatility": 14,
         "academic_value": 18
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_internal_bridge",
@@ -2013,7 +2439,13 @@
         "mana_efficiency": -14,
         "versatility": 5,
         "academic_value": 18
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "infuse_domain_rule",
@@ -2042,7 +2474,13 @@
         "mana_efficiency": -18,
         "versatility": 10,
         "academic_value": 20
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "release_projectile",
@@ -2068,7 +2506,13 @@
         "mana_efficiency": 5,
         "versatility": 6,
         "academic_value": 2
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "release_vector_push",
@@ -2095,7 +2539,13 @@
         "mana_efficiency": 5,
         "versatility": 7,
         "academic_value": 3
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "release_maintain",
@@ -2121,7 +2571,13 @@
         "mana_efficiency": -2,
         "versatility": 6,
         "academic_value": 4
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "release_bind",
@@ -2147,7 +2603,13 @@
         "mana_efficiency": -1,
         "versatility": 7,
         "academic_value": 5
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "release_sense",
@@ -2174,7 +2636,13 @@
         "mana_efficiency": 1,
         "versatility": 9,
         "academic_value": 7
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "release_activate",
@@ -2200,7 +2668,13 @@
         "mana_efficiency": -3,
         "versatility": 4,
         "academic_value": 5
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "release_disrupt",
@@ -2227,7 +2701,13 @@
         "mana_efficiency": -4,
         "versatility": 10,
         "academic_value": 8
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "release_diffuse",
@@ -2253,7 +2733,13 @@
         "mana_efficiency": -3,
         "versatility": 6,
         "academic_value": 6
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "release_flow",
@@ -2279,7 +2765,13 @@
         "mana_efficiency": 4,
         "versatility": 7,
         "academic_value": 5
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "release_chain_spread",
@@ -2306,7 +2798,13 @@
         "mana_efficiency": -5,
         "versatility": 8,
         "academic_value": 8
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "release_infiltrate",
@@ -2333,7 +2831,13 @@
         "mana_efficiency": -4,
         "versatility": 10,
         "academic_value": 9
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "release_accelerate",
@@ -2361,7 +2865,13 @@
         "mana_efficiency": -4,
         "versatility": 9,
         "academic_value": 8
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "release_construct",
@@ -2388,7 +2898,13 @@
         "mana_efficiency": -4,
         "versatility": 11,
         "academic_value": 9
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "release_reflect",
@@ -2415,7 +2931,13 @@
         "mana_efficiency": -4,
         "versatility": 11,
         "academic_value": 10
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "release_self_sustain",
@@ -2443,7 +2965,13 @@
         "mana_efficiency": 2,
         "versatility": 8,
         "academic_value": 10
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "release_field",
@@ -2470,7 +2998,13 @@
         "mana_efficiency": -9,
         "versatility": 5,
         "academic_value": 8
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "release_adaptive",
@@ -2496,7 +3030,13 @@
         "mana_efficiency": -5,
         "versatility": 9,
         "academic_value": 8
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "release_wide",
@@ -2522,7 +3062,13 @@
         "mana_efficiency": -6,
         "versatility": 7,
         "academic_value": 10
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "release_direct_control",
@@ -2549,7 +3095,13 @@
         "mana_efficiency": -7,
         "versatility": 10,
         "academic_value": 11
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "release_essence_rewrite",
@@ -2575,7 +3127,13 @@
         "mana_efficiency": -8,
         "versatility": 11,
         "academic_value": 14
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "release_origin_manufacture",
@@ -2601,7 +3159,13 @@
         "mana_efficiency": -10,
         "versatility": 11,
         "academic_value": 16
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "release_internal_cast",
@@ -2629,7 +3193,13 @@
         "mana_efficiency": -14,
         "versatility": 5,
         "academic_value": 18
-      }
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
     },
     {
       "id": "release_domain_control",
@@ -2657,6 +3227,416 @@
         "mana_efficiency": -18,
         "versatility": 10,
         "academic_value": 20
+      },
+      "selection_class": "core",
+      "name_role": "base",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": null
+    },
+    {
+      "id": "model_expanded",
+      "stage": "model",
+      "name": "膨胀外形",
+      "category": "form_detail",
+      "selection_class": "detail",
+      "name_role": "variant",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": "膨胀",
+      "buff_label": null,
+      "summary": "Expand the formed carrier without changing its base mold.",
+      "tier": 1,
+      "difficulty": 4,
+      "outputs": [
+        "expanded"
+      ],
+      "tags": [
+        "膨胀"
+      ],
+      "risk_tags": [],
+      "score_bias": {
+        "power": 3,
+        "stability": -2,
+        "learnability": -1,
+        "mana_efficiency": -3,
+        "versatility": 2,
+        "academic_value": 2
+      }
+    },
+    {
+      "id": "model_smooth_surface",
+      "stage": "model",
+      "name": "表面平滑",
+      "category": "form_detail",
+      "selection_class": "detail",
+      "name_role": "variant",
+      "stack_key": null,
+      "exclusive_group": "model.surface",
+      "name_affix": "平滑",
+      "buff_label": null,
+      "summary": "Smooth the carrier surface for steadier flow.",
+      "tier": 1,
+      "difficulty": 3,
+      "outputs": [
+        "smooth_surface"
+      ],
+      "tags": [
+        "表面"
+      ],
+      "risk_tags": [],
+      "score_bias": {
+        "power": 0,
+        "stability": 3,
+        "learnability": 1,
+        "mana_efficiency": 1,
+        "versatility": 1,
+        "academic_value": 1
+      }
+    },
+    {
+      "id": "model_rough_surface",
+      "stage": "model",
+      "name": "表面凹凸",
+      "category": "form_detail",
+      "selection_class": "detail",
+      "name_role": "variant",
+      "stack_key": null,
+      "exclusive_group": "model.surface",
+      "name_affix": "凹凸",
+      "buff_label": null,
+      "summary": "Roughen the carrier surface for disruptive contact.",
+      "tier": 1,
+      "difficulty": 3,
+      "outputs": [
+        "rough_surface"
+      ],
+      "tags": [
+        "表面"
+      ],
+      "risk_tags": [
+        "drift"
+      ],
+      "score_bias": {
+        "power": 2,
+        "stability": -2,
+        "learnability": 0,
+        "mana_efficiency": -1,
+        "versatility": 2,
+        "academic_value": 1
+      }
+    },
+    {
+      "id": "model_larger",
+      "stage": "model",
+      "name": "更大",
+      "category": "form_tuning",
+      "selection_class": "tuning",
+      "name_role": "buff",
+      "stack_key": "model.size.up",
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": "更大",
+      "summary": "Increase carrier scale as a stackable adjustment.",
+      "tier": 1,
+      "difficulty": 3,
+      "outputs": [
+        "size_up"
+      ],
+      "tags": [
+        "规模"
+      ],
+      "risk_tags": [],
+      "score_bias": {
+        "power": 2,
+        "stability": -1,
+        "learnability": -1,
+        "mana_efficiency": -2,
+        "versatility": 1,
+        "academic_value": 0
+      }
+    },
+    {
+      "id": "model_smaller",
+      "stage": "model",
+      "name": "更小",
+      "category": "form_tuning",
+      "selection_class": "tuning",
+      "name_role": "buff",
+      "stack_key": "model.size.down",
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": "更小",
+      "summary": "Reduce carrier scale as a stackable adjustment.",
+      "tier": 1,
+      "difficulty": 2,
+      "outputs": [
+        "size_down"
+      ],
+      "tags": [
+        "规模"
+      ],
+      "risk_tags": [],
+      "score_bias": {
+        "power": -1,
+        "stability": 2,
+        "learnability": 1,
+        "mana_efficiency": 2,
+        "versatility": 0,
+        "academic_value": 0
+      }
+    },
+    {
+      "id": "infuse_keep_space",
+      "stage": "infuse",
+      "name": "保留空间",
+      "category": "infusion_detail",
+      "selection_class": "detail",
+      "name_role": "variant",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": "留隙",
+      "buff_label": null,
+      "summary": "Reserve inner space during infusion for later deformation.",
+      "tier": 1,
+      "difficulty": 4,
+      "outputs": [
+        "reserved_space"
+      ],
+      "tags": [
+        "留隙"
+      ],
+      "risk_tags": [],
+      "score_bias": {
+        "power": 0,
+        "stability": -1,
+        "learnability": -1,
+        "mana_efficiency": -1,
+        "versatility": 4,
+        "academic_value": 2
+      }
+    },
+    {
+      "id": "infuse_more",
+      "stage": "infuse",
+      "name": "更多灌注",
+      "category": "infusion_tuning",
+      "selection_class": "tuning",
+      "name_role": "buff",
+      "stack_key": "infuse.amount.up",
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": "灌注更多",
+      "summary": "Add more purified force into the carrier.",
+      "tier": 1,
+      "difficulty": 3,
+      "outputs": [
+        "infuse_more"
+      ],
+      "tags": [
+        "灌注量"
+      ],
+      "risk_tags": [
+        "overpressure"
+      ],
+      "score_bias": {
+        "power": 3,
+        "stability": -2,
+        "learnability": -1,
+        "mana_efficiency": -3,
+        "versatility": 1,
+        "academic_value": 0
+      }
+    },
+    {
+      "id": "infuse_less",
+      "stage": "infuse",
+      "name": "减少灌注",
+      "category": "infusion_tuning",
+      "selection_class": "tuning",
+      "name_role": "buff",
+      "stack_key": "infuse.amount.down",
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": "灌注减少",
+      "summary": "Use less purified force for a lighter structure.",
+      "tier": 1,
+      "difficulty": 2,
+      "outputs": [
+        "infuse_less"
+      ],
+      "tags": [
+        "灌注量"
+      ],
+      "risk_tags": [],
+      "score_bias": {
+        "power": -2,
+        "stability": 1,
+        "learnability": 1,
+        "mana_efficiency": 3,
+        "versatility": 1,
+        "academic_value": 0
+      }
+    },
+    {
+      "id": "release_high_arc",
+      "stage": "release",
+      "name": "高抛投掷",
+      "category": "release_detail",
+      "selection_class": "detail",
+      "name_role": "variant",
+      "stack_key": null,
+      "exclusive_group": null,
+      "name_affix": "高抛",
+      "buff_label": null,
+      "summary": "Release the completed structure with a high arc.",
+      "tier": 1,
+      "difficulty": 4,
+      "outputs": [
+        "high_arc"
+      ],
+      "tags": [
+        "投掷"
+      ],
+      "risk_tags": [
+        "miss"
+      ],
+      "score_bias": {
+        "power": 1,
+        "stability": -1,
+        "learnability": -1,
+        "mana_efficiency": -1,
+        "versatility": 3,
+        "academic_value": 1
+      }
+    },
+    {
+      "id": "release_curve_left",
+      "stage": "release",
+      "name": "左弯投掷",
+      "category": "release_detail",
+      "selection_class": "detail",
+      "name_role": "variant",
+      "stack_key": null,
+      "exclusive_group": "release.curve",
+      "name_affix": "左弯",
+      "buff_label": null,
+      "summary": "Curve the release path toward the left.",
+      "tier": 1,
+      "difficulty": 4,
+      "outputs": [
+        "curve_left"
+      ],
+      "tags": [
+        "投掷",
+        "弯曲"
+      ],
+      "risk_tags": [
+        "drift"
+      ],
+      "score_bias": {
+        "power": 0,
+        "stability": -2,
+        "learnability": -1,
+        "mana_efficiency": -1,
+        "versatility": 4,
+        "academic_value": 2
+      }
+    },
+    {
+      "id": "release_curve_right",
+      "stage": "release",
+      "name": "右弯投掷",
+      "category": "release_detail",
+      "selection_class": "detail",
+      "name_role": "variant",
+      "stack_key": null,
+      "exclusive_group": "release.curve",
+      "name_affix": "右弯",
+      "buff_label": null,
+      "summary": "Curve the release path toward the right.",
+      "tier": 1,
+      "difficulty": 4,
+      "outputs": [
+        "curve_right"
+      ],
+      "tags": [
+        "投掷",
+        "弯曲"
+      ],
+      "risk_tags": [
+        "drift"
+      ],
+      "score_bias": {
+        "power": 0,
+        "stability": -2,
+        "learnability": -1,
+        "mana_efficiency": -1,
+        "versatility": 4,
+        "academic_value": 2
+      }
+    },
+    {
+      "id": "release_faster",
+      "stage": "release",
+      "name": "更快",
+      "category": "release_tuning",
+      "selection_class": "tuning",
+      "name_role": "buff",
+      "stack_key": "release.speed.up",
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": "更快",
+      "summary": "Increase release speed as a stackable adjustment.",
+      "tier": 1,
+      "difficulty": 3,
+      "outputs": [
+        "speed_up"
+      ],
+      "tags": [
+        "速度"
+      ],
+      "risk_tags": [
+        "miss"
+      ],
+      "score_bias": {
+        "power": 2,
+        "stability": -2,
+        "learnability": -1,
+        "mana_efficiency": -2,
+        "versatility": 1,
+        "academic_value": 0
+      }
+    },
+    {
+      "id": "release_slower",
+      "stage": "release",
+      "name": "更慢",
+      "category": "release_tuning",
+      "selection_class": "tuning",
+      "name_role": "buff",
+      "stack_key": "release.speed.down",
+      "exclusive_group": null,
+      "name_affix": null,
+      "buff_label": "更慢",
+      "summary": "Reduce release speed as a stackable adjustment.",
+      "tier": 1,
+      "difficulty": 2,
+      "outputs": [
+        "speed_down"
+      ],
+      "tags": [
+        "速度"
+      ],
+      "risk_tags": [],
+      "score_bias": {
+        "power": -1,
+        "stability": 2,
+        "learnability": 1,
+        "mana_efficiency": 1,
+        "versatility": 1,
+        "academic_value": 0
       }
     }
   ],

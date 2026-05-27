@@ -10,6 +10,7 @@ from app.models import (
     NodeInstance,
     NodeLibrary,
     RadarScore,
+    SpellModifier,
     SpellLevelAssessment,
     StageBuild,
     StageId,
@@ -94,12 +95,14 @@ def compile_graph(request: CompileGraphRequest) -> CompileGraphResult:
     nodes_by_id = {node.id: node for node in library.nodes}
     stages = {stage.stage: stage for stage in request.stages}
     issues = _validate_request(request, library, nodes_by_id, stages)
+    if not any(issue.severity == "error" for issue in issues):
+        issues.extend(_selection_issues(stages, nodes_by_id))
     stage_outcomes: list[StageOutcome] = []
     score = dict(BASE_SCORE)
     risk_tags: list[str] = []
     compiled_nodes: list[NodeDefinition] = []
     context = _CompileContext()
-    fixed_profile = identify_fixed_spell(request.stages) if not any(issue.severity == "error" for issue in issues) else None
+    fixed_profile = identify_fixed_spell(request.stages, nodes_by_id) if not any(issue.severity == "error" for issue in issues) else None
 
     if not any(issue.severity == "error" for issue in issues):
         for stage_id in STAGE_ORDER:
@@ -129,7 +132,8 @@ def compile_graph(request: CompileGraphRequest) -> CompileGraphResult:
         else:
             status = "compiled"
 
-    spell_name = _name_spell(stage_outcomes, context, assessment, fixed_profile)
+    modifiers = _collect_modifiers(stages, nodes_by_id) if not any(issue.severity == "error" for issue in issues) else []
+    spell_name = _name_spell(stage_outcomes, context, assessment, fixed_profile, modifiers)
     summary = _summarize(stage_outcomes, status, assessment)
     radar = _build_radar(score)
     card = _build_card(request, spell_name, summary, stage_outcomes, issues, risk_tags, assessment)
@@ -140,6 +144,7 @@ def compile_graph(request: CompileGraphRequest) -> CompileGraphResult:
         spell_level=assessment,
         stage_outcomes=stage_outcomes,
         issues=issues,
+        modifiers=modifiers,
         radar=radar,
         spell_card=card,
     )
@@ -192,6 +197,72 @@ def _validate_request(
     for stage in request.stages:
         if stage.stage not in known_stages:
             issues.append(_issue("stage.unknown", "error", None, None, f"未知阶段 {stage.stage}。", "使用固定四阶段。"))
+    return issues
+
+
+def _selection_issues(stages: dict[StageId, StageBuild], nodes_by_id: dict[str, NodeDefinition]) -> list[CompileIssue]:
+    issues: list[CompileIssue] = []
+    for stage_id in STAGE_ORDER:
+        stage = stages[stage_id]
+        core_instances = [instance for instance in stage.nodes if nodes_by_id[instance.node_id].selection_class == "core"]
+        if stage_id != "purify" and len(core_instances) != 1:
+            issues.append(
+                _issue(
+                    "selection.core_required",
+                    "error",
+                    stage_id,
+                    None,
+                    f"{STAGE_LABELS[stage_id]}阶段必须且只能有一个核心节点。",
+                    "保留一个决定基础结构的核心节点，再把其他变化放入细节或调节节点。",
+                )
+            )
+        elif len(core_instances) > 1:
+            issues.append(
+                _issue(
+                    "selection.core_conflict",
+                    "error",
+                    stage_id,
+                    core_instances[1].instance_id,
+                    f"{STAGE_LABELS[stage_id]}阶段核心节点过多。",
+                    "同一阶段只能选择一个不可叠加核心节点。",
+                )
+            )
+
+        detail_seen: dict[str, NodeInstance] = {}
+        exclusive_seen: dict[str, NodeInstance] = {}
+        for instance in stage.nodes:
+            node = nodes_by_id[instance.node_id]
+            if node.selection_class != "detail":
+                continue
+            previous = detail_seen.get(node.id)
+            if previous:
+                issues.append(
+                    _issue(
+                        "selection.detail_duplicate",
+                        "error",
+                        stage_id,
+                        instance.instance_id,
+                        f"细节节点「{node.name}」不能重复选择。",
+                        "第二类节点允许选择多种，但每种最多一个。",
+                    )
+                )
+            detail_seen[node.id] = instance
+            if not node.exclusive_group:
+                continue
+            previous_exclusive = exclusive_seen.get(node.exclusive_group)
+            if previous_exclusive and previous_exclusive.node_id != node.id:
+                previous_node = nodes_by_id[previous_exclusive.node_id]
+                issues.append(
+                    _issue(
+                        "selection.detail_exclusive",
+                        "error",
+                        stage_id,
+                        instance.instance_id,
+                        f"细节节点「{previous_node.name}」与「{node.name}」互斥。",
+                        "保留其中一个互斥细节。",
+                    )
+                )
+            exclusive_seen[node.exclusive_group] = instance
     return issues
 
 
@@ -407,6 +478,41 @@ def _build_radar(score: dict[str, int]) -> list[RadarScore]:
     return radar
 
 
+def _collect_modifiers(stages: dict[StageId, StageBuild], nodes_by_id: dict[str, NodeDefinition]) -> list[SpellModifier]:
+    variant_modifiers: list[SpellModifier] = []
+    buff_groups: dict[str, SpellModifier] = {}
+    for stage_id in STAGE_ORDER:
+        for instance in stages[stage_id].nodes:
+            node = nodes_by_id[instance.node_id]
+            if node.name_role == "variant":
+                variant_modifiers.append(
+                    SpellModifier(
+                        key=node.stack_key or node.id,
+                        label=node.name_affix or node.name,
+                        kind="variant",
+                        stage=stage_id,
+                        count=1,
+                        node_instance_ids=[instance.instance_id],
+                    )
+                )
+            elif node.name_role == "buff":
+                key = node.stack_key or node.id
+                modifier = buff_groups.get(key)
+                if modifier:
+                    modifier.count += 1
+                    modifier.node_instance_ids.append(instance.instance_id)
+                else:
+                    buff_groups[key] = SpellModifier(
+                        key=key,
+                        label=node.buff_label or node.name,
+                        kind="buff",
+                        stage=stage_id,
+                        count=1,
+                        node_instance_ids=[instance.instance_id],
+                    )
+    return variant_modifiers + list(buff_groups.values())
+
+
 def _score_reason(key: str, value: int) -> str:
     if key in {"learnability", "mana_efficiency"}:
         if value >= 70:
@@ -426,21 +532,21 @@ def _name_spell(
     context: _CompileContext,
     assessment: SpellLevelAssessment,
     fixed_profile: FixedSpellProfile | None,
+    modifiers: list[SpellModifier],
 ) -> str:
+    variant_prefix = "".join(modifier.label for modifier in modifiers if modifier.kind == "variant")
     if fixed_profile:
-        return fixed_profile.name
+        return f"{variant_prefix}{fixed_profile.name}" if variant_prefix else fixed_profile.name
     mold = _outcome(outcomes, "model")
     element = _outcome(outcomes, "purify")
     infusion = _outcome(outcomes, "infuse")
     if element == "风系法术" and "刃" in mold and "多重" in infusion:
-        return "多重风刃"
+        return f"{variant_prefix}多重风刃" if variant_prefix else "多重风刃"
     if element == "泥沼系法术":
-        return "泥沼术"
+        return f"{variant_prefix}泥沼术" if variant_prefix else "泥沼术"
     if element == "雷电系法术":
-        return "雷电术"
-    if element.endswith("法术"):
-        return f"未定义{element}"
-    return "未命名法术"
+        return f"{variant_prefix}雷电术" if variant_prefix else "雷电术"
+    return "暂无"
 
 
 def _summarize(outcomes: list[StageOutcome], status: str, assessment: SpellLevelAssessment) -> str:

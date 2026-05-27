@@ -86,6 +86,8 @@ class CompileResult(BaseModel):
 
 
 StageId = Literal["model", "purify", "infuse", "release"]
+NodeSelectionClass = Literal["core", "detail", "tuning"]
+NodeNameRole = Literal["base", "variant", "buff", "none"]
 
 
 class StageDefinition(BaseModel):
@@ -99,6 +101,12 @@ class NodeDefinition(BaseModel):
     stage: StageId
     name: str
     category: str
+    selection_class: NodeSelectionClass = "detail"
+    name_role: NodeNameRole = "none"
+    stack_key: str | None = None
+    exclusive_group: str | None = None
+    name_affix: str | None = None
+    buff_label: str | None = None
     summary: str
     tier: int = Field(ge=0, le=10)
     difficulty: int = Field(ge=0)
@@ -180,6 +188,15 @@ class GraphSpellCard(BaseModel):
     suggestions: list[str]
 
 
+class SpellModifier(BaseModel):
+    key: str
+    label: str
+    kind: Literal["variant", "buff"]
+    stage: StageId
+    count: int = Field(ge=1)
+    node_instance_ids: list[str]
+
+
 class SpellLevelAssessment(BaseModel):
     tier: int = Field(ge=0, le=10)
     label: str
@@ -198,5 +215,6 @@ class CompileGraphResult(BaseModel):
     spell_level: SpellLevelAssessment
     stage_outcomes: list[StageOutcome]
     issues: list[CompileIssue]
+    modifiers: list[SpellModifier] = Field(default_factory=list)
     radar: list[RadarScore]
     spell_card: GraphSpellCard

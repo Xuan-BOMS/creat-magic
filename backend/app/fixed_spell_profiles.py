@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from app.models import CompileGraphRequest, StageBuild, StageId
+from app.models import CompileGraphRequest, NodeDefinition, StageBuild, StageId
 
 STAGE_ORDER: tuple[StageId, ...] = ("model", "purify", "infuse", "release")
 
@@ -123,8 +123,15 @@ def system_from_key(key: str | None) -> str | None:
     return None
 
 
-def identify_fixed_spell(stages: list[StageBuild]) -> FixedSpellProfile | None:
-    by_stage = {stage.stage: tuple(instance.node_id for instance in stage.nodes) for stage in stages}
+def identify_fixed_spell(stages: list[StageBuild], nodes_by_id: dict[str, NodeDefinition] | None = None) -> FixedSpellProfile | None:
+    by_stage = {
+        stage.stage: tuple(
+            instance.node_id
+            for instance in stage.nodes
+            if not nodes_by_id or nodes_by_id[instance.node_id].name_role == "base"
+        )
+        for stage in stages
+    }
     if set(by_stage) != set(STAGE_ORDER):
         return None
     return SIGNATURE_INDEX.get(tuple((stage, by_stage[stage]) for stage in STAGE_ORDER))
