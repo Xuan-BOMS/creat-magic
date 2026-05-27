@@ -76,6 +76,12 @@ type CompileResult = {
 const API_BASE = import.meta.env.VITE_API_BASE ?? "http://127.0.0.1:8000";
 const storageKey = "spell-graph-builder-state";
 const nodeViewModeKey = "spell-node-drawer-compact";
+const stagePurposeText: Record<StageId, string> = {
+  model: "建立法术的承载结构。",
+  purify: "选择元素或以太倾向。",
+  infuse: "把提纯结果注入结构。",
+  release: "执行完整法术结构。",
+};
 
 const defaultBuild: CompileRequest = {
   intent: "法术构建",
@@ -95,7 +101,7 @@ function App() {
     return saved ? (JSON.parse(saved) as CompileRequest) : defaultBuild;
   });
   const [activeStageId, setActiveStageId] = React.useState<StageId>("model");
-  const [drawerOpen, setDrawerOpen] = React.useState(true);
+  const [drawerOpen, setDrawerOpen] = React.useState(() => window.innerWidth > 980);
   const [examples, setExamples] = React.useState<CompileRequest[]>([]);
   const [result, setResult] = React.useState<CompileResult | null>(null);
   const [loading, setLoading] = React.useState(false);
@@ -230,6 +236,7 @@ function App() {
             <div>
               <span>节点</span>
               <strong>{activeStage?.name}</strong>
+              <p>{stagePurpose(activeStage)}</p>
             </div>
             <button className="node-mode-toggle" onClick={() => setCompactNodes((value) => !value)} aria-pressed={!compactNodes}>
               {compactNodes ? "简略" : "详细"}
@@ -250,6 +257,7 @@ function App() {
                 <span>
                   {node.name}
                   <small>{node.tier}阶 / 难度 +{node.difficulty}</small>
+                  {node.tags.length > 0 && <em>{node.tags.slice(0, 3).join(" · ")}</em>}
                 </span>
               </button>
             ))}
@@ -260,14 +268,18 @@ function App() {
           <div className="stage-flow">
             {library.stages.map((stage, index) => {
               const stageBuild = build.stages.find((item) => item.stage === stage.id);
+              const nodeCount = stageBuild?.nodes.length ?? 0;
               return (
                 <React.Fragment key={stage.id}>
                   <section className={`stage-column ${stage.id} ${stage.id === activeStageId ? "active" : ""}`} onClick={() => openStage(stage.id)}>
                     <button className="stage-title" onClick={() => openStage(stage.id)}>
-                      <span>{index + 1}</span>
-                      <strong>{stage.name}</strong>
+                      <span className="stage-index">{String(index + 1).padStart(2, "0")}</span>
+                      <span className="stage-title-copy">
+                        <strong>{stage.name}</strong>
+                        <small>{nodeCount} 个节点</small>
+                      </span>
                     </button>
-                    <div className="stage-result">{outcomeFor(result, stage.id) ?? stage.purpose}</div>
+                    <div className="stage-result">{outcomeFor(result, stage.id) ?? stagePurpose(stage)}</div>
                     <div className="stage-nodes">
                       {(stageBuild?.nodes ?? []).map((instance, nodeIndex) => {
                         const node = nodeMap.get(instance.node_id);
@@ -301,7 +313,10 @@ function App() {
 
           <section className="compile-output">
             <div className="result-copy">
-              <span className={`status ${result?.status ?? "pending"}`}>{statusText(result?.status)}</span>
+              <div className="result-head">
+                <span className={`status ${result?.status ?? "pending"}`}>{statusText(result?.status)}</span>
+                <span>编译结果</span>
+              </div>
               <h2>{result?.spell_name ?? "待编译法术"}</h2>
               {result && (
                 <div className="tier-strip">
@@ -338,6 +353,10 @@ async function fetchJson<T>(path: string): Promise<T> {
 
 function outcomeFor(result: CompileResult | null, stage: StageId) {
   return result?.stage_outcomes.find((outcome) => outcome.stage === stage)?.result;
+}
+
+function stagePurpose(stage?: StageDefinition) {
+  return stage ? stagePurposeText[stage.id] : "";
 }
 
 function statusText(status?: Status) {
