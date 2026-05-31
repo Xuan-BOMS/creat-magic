@@ -128,7 +128,7 @@ function App() {
     return saved ? (JSON.parse(saved) as CompileRequest) : defaultBuild;
   });
   const [activeStageId, setActiveStageId] = React.useState<StageId>("model");
-  const [drawerOpen, setDrawerOpen] = React.useState(() => window.innerWidth > 980);
+  const [pickerOpen, setPickerOpen] = React.useState(false);
   const [examples, setExamples] = React.useState<CompileRequest[]>([]);
   const [result, setResult] = React.useState<CompileResult | null>(null);
   const [texts, setTexts] = React.useState<AppTexts | null>(null);
@@ -190,7 +190,7 @@ function App() {
 
   function openStage(stageId: StageId) {
     setActiveStageId(stageId);
-    setDrawerOpen(true);
+    setPickerOpen(true);
   }
 
   function addNode(node: NodeDefinition) {
@@ -265,10 +265,10 @@ function App() {
   }
 
   return (
-    <main className={drawerOpen ? "app drawer-open" : "app drawer-closed"}>
+    <main className={pickerOpen ? "app picker-open" : "app picker-closed"}>
       <header className="topbar">
-        <button className="drawer-toggle" onClick={() => setDrawerOpen((value) => !value)} aria-label={drawerOpen ? texts.aria.collapse_drawer : texts.aria.expand_drawer}>
-          {drawerOpen ? <X size={19} /> : <Menu size={19} />}
+        <button className="picker-toggle" onClick={() => setPickerOpen((value) => !value)} aria-label={pickerOpen ? texts.aria.collapse_drawer : texts.aria.expand_drawer}>
+          {pickerOpen ? <X size={19} /> : <Menu size={19} />}
         </button>
         <div className="brand">
           <span>{texts.brand.eyebrow}</span>
@@ -289,73 +289,6 @@ function App() {
       </header>
 
       <section className="workspace">
-        <aside className="node-drawer">
-          <div className="drawer-head">
-            <div>
-              <span>{texts.node.drawer_title}</span>
-              <strong>{activeStage?.name}</strong>
-              <p>{stagePurpose(activeStage, texts)}</p>
-            </div>
-            <button className="node-mode-toggle" onClick={() => setCompactNodes((value) => !value)} aria-pressed={!compactNodes}>
-              {compactNodes ? texts.actions.compact : texts.actions.detail}
-            </button>
-          </div>
-          <div className="stage-tabs">
-            {library.stages.map((stage, index) => (
-              <button className={stage.id === activeStageId ? "active" : ""} key={stage.id} onClick={() => openStage(stage.id)}>
-                <span>{index + 1}</span>
-                {stage.name}
-              </button>
-            ))}
-          </div>
-          <div className={compactNodes ? "node-picker compact" : "node-picker detail"}>
-            {selectionOrder.map((selectionClass) => {
-              const nodes = groupedActiveNodes[selectionClass];
-              const meta = selectionMeta[selectionClass];
-              const Icon = meta.Icon;
-              if (!nodes.length) return null;
-              return (
-                <section className={`node-group selection-${selectionClass}`} key={selectionClass}>
-                  <div className="node-group-title">
-                    <Icon size={15} />
-                    <span>{meta.label}</span>
-                    <small>{meta.hint}</small>
-                  </div>
-                  <div className="node-group-grid">
-                    {nodes.map((node) => {
-                      const count = activeNodeCounts.get(node.id) ?? 0;
-                      const selected = count > 0;
-                      const disabled = node.selection_class !== "tuning" && selected;
-                      return (
-                        <button
-                          className={`pick-node ${node.stage} selection-${node.selection_class}`}
-                          key={node.id}
-                          onClick={() => addNode(node)}
-                          disabled={disabled}
-                          title={`${node.name}，${node.tier}${texts.node.tier_suffix}，${texts.node.difficulty} +${node.difficulty}`}
-                        >
-                          <Plus size={14} />
-                          <span>
-                            <b>
-                              {node.name}
-                              {selected && <i>{node.selection_class === "tuning" ? `x${count}` : texts.node.selected}</i>}
-                            </b>
-                            <small>
-                              {selectionMeta[node.selection_class].label} / {node.tier}
-                              {texts.node.tier_suffix} / {texts.node.difficulty} +{node.difficulty}
-                            </small>
-                            {node.tags.length > 0 && <em>{node.tags.slice(0, 3).join(texts.node.tag_separator)}</em>}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </section>
-              );
-            })}
-          </div>
-        </aside>
-
         <section className="builder">
           <div className="stage-flow">
             {library.stages.map((stage, index) => {
@@ -384,7 +317,7 @@ function App() {
                           <article
                             className={`work-node ${stage.id} ${node ? `selection-${node.selection_class}` : ""}`}
                             key={entry.key}
-                            onClick={(event) => event.stopPropagation()}
+                            onClick={() => openStage(stage.id)}
                           >
                             <strong>
                               {node?.name ?? instance.node_id}
@@ -396,7 +329,7 @@ function App() {
                                 </small>
                               )}
                             </strong>
-                            <div className="node-actions">
+                            <div className="node-actions" onClick={(event) => event.stopPropagation()}>
                               <button onClick={() => moveNode(stage.id, instance.instance_id, -1)} disabled={grouped || nodeIndex === 0} aria-label={texts.aria.move_up}>
                                 <ArrowUp size={13} />
                               </button>
@@ -464,6 +397,86 @@ function App() {
             {result && <RadarChart scores={result.radar} ariaLabel={texts.aria.radar} />}
           </section>
         </section>
+
+        <aside className="node-tray" aria-hidden={!pickerOpen}>
+          <div className="tray-grip" aria-hidden="true" />
+          <div className="drawer-head">
+            <div>
+              <span>{texts.node.drawer_title}</span>
+              <strong>{activeStage?.name}</strong>
+              <p>{stagePurpose(activeStage, texts)}</p>
+            </div>
+            <div className="tray-actions">
+              <button className="node-mode-toggle" onClick={() => setCompactNodes((value) => !value)} aria-pressed={!compactNodes}>
+                {compactNodes ? texts.actions.compact : texts.actions.detail}
+              </button>
+              <button className="tray-close" onClick={() => setPickerOpen(false)} aria-label={texts.aria.collapse_drawer}>
+                <X size={16} />
+              </button>
+            </div>
+          </div>
+          <div className="stage-tabs">
+            {library.stages.map((stage, index) => (
+              <button className={stage.id === activeStageId ? "active" : ""} key={stage.id} onClick={() => openStage(stage.id)}>
+                <span>{index + 1}</span>
+                {stage.name}
+              </button>
+            ))}
+          </div>
+          <div className={compactNodes ? "node-picker compact" : "node-picker detail"}>
+            {selectionOrder.map((selectionClass) => {
+              const nodes = groupedActiveNodes[selectionClass];
+              const meta = selectionMeta[selectionClass];
+              const Icon = meta.Icon;
+              if (!nodes.length) return null;
+              return (
+                <section className={`node-group selection-${selectionClass}`} key={selectionClass}>
+                  <div className="node-group-title">
+                    <Icon size={15} />
+                    <span>{meta.label}</span>
+                    <small>{meta.hint}</small>
+                  </div>
+                  <div className="node-group-grid">
+                    {nodes.map((node) => {
+                      const count = activeNodeCounts.get(node.id) ?? 0;
+                      const selected = count > 0;
+                      const disabled = node.selection_class !== "tuning" && selected;
+                      return (
+                        <button
+                          className={`pick-node ${node.stage} selection-${node.selection_class}`}
+                          key={node.id}
+                          onClick={() => addNode(node)}
+                          disabled={disabled}
+                          title={`${node.name}，${node.tier}${texts.node.tier_suffix}，${texts.node.difficulty} +${node.difficulty}`}
+                        >
+                          <Plus size={14} />
+                          <span>
+                            <b>
+                              {node.name}
+                              {selected && <i>{node.selection_class === "tuning" ? `x${count}` : texts.node.selected}</i>}
+                            </b>
+                            <small>
+                              {selectionMeta[node.selection_class].label} / {node.tier}
+                              {texts.node.tier_suffix} / {texts.node.difficulty} +{node.difficulty}
+                            </small>
+                            {node.tags.length > 0 && <em>{node.tags.slice(0, 3).join(texts.node.tag_separator)}</em>}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
+              );
+            })}
+          </div>
+        </aside>
+
+        <button className="tray-peek" onClick={() => setPickerOpen(true)} aria-label={texts.aria.expand_drawer}>
+          <Menu size={16} />
+          <span>
+            {texts.node.drawer_title} · {activeStage?.name}
+          </span>
+        </button>
       </section>
     </main>
   );
