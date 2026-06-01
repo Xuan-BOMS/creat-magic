@@ -30,6 +30,16 @@
 
 阶段内部使用有序节点列表，不做自由图或 DAG。前端用箭头表现阶段关系，后端按四阶段线性编译。
 
+当前前端形态：
+
+```text
+暗色工作台
+上方四阶段节点区域
+下方编译结果与六维雷达
+默认收起的底部节点栏
+点击阶段后弹出节点栏并只显示当前阶段节点
+```
+
 MVP 示例：
 
 ```text
@@ -48,14 +58,19 @@ MVP 示例：
 ## 精简架构
 
 ```text
+backend/app/main.py
+  FastAPI 应用入口：CORS、本地前端与公网域名白名单、挂载 /api 路由。
+
 frontend/src/main.tsx
-  React 工作台：四阶段构建区、可滑出节点抽屉、编译按钮、法术摘要、六维雷达。
+  React 工作台：四阶段构建区、底部节点栏、编译按钮、法术摘要、六维雷达。
+  API 基址规则：本地 127.0.0.1/localhost 访问 127.0.0.1:8000；公网使用同源 /api。
 
 frontend/src/styles.css
-  工作台视觉、抽屉滑出/收起、桌面/移动响应式布局、雷达图样式。
+  暗色工作台视觉、底部节点栏展开/收起、桌面/移动响应式布局、雷达图样式。
+  移动端阶段箭头必须保持 pointer-events: none，避免拦截阶段点击。
 
 backend/app/routes.py
-  FastAPI API 入口，挂载 legacy 接口和 MVP 图编译接口。
+  FastAPI API 路由：健康检查、节点库、示例、文本包、legacy 接口和 MVP 图编译接口。
 
 backend/app/models.py
   Pydantic 数据契约：节点库、阶段构建、编译请求、编译结果、问题与摘要数据。
@@ -80,11 +95,35 @@ data/examples/*.json
 
 data/magic_have/*.md
   人工可读资料，不作为运行时规则来源。
+
+backend/tests/*.py
+  后端回归测试，覆盖 legacy 编译与四阶段图编译。
+
+frontend/package.json
+  前端脚本与依赖：dev、build、preview。
+
+run-local.bat / stop-local.bat
+  本地开发辅助脚本。
+
+README.md
+  面向人类的项目概览、运行方式和验证结果。
+
+docs/requirements/*.md
+docs/plans/*.md
+  需求与执行计划记录，除非用户要求整理文档，否则不要为功能改动批量改写。
+
+docs/ui/assets/workbench-main-ui-reference.svg
+  主工作台 UI 参考图。
+
+.deploy/
+  一次性服务器部署产物与脚本缓存，包含打包后端、wheel、tar 包等。
+  默认不要提交，也不要把其中的临时部署包当作源码入口。
 ```
 
 MVP API：
 
 ```text
+GET  /api/health
 GET  /api/nodes
 GET  /api/examples
 GET  /api/texts
@@ -98,6 +137,8 @@ POST /api/compile-graph
 - 改节点本体名称、节点标签、节点类型、叠加规则、节点数值：改 `data/nodes/mvp_nodes.json`。
 - 改固定法术的基础签名，即“哪些核心节点组合识别为何种法术”：改 `backend/app/fixed_spell_profiles.py`。
 - 改链路校验、命名兜底、阶级、风险和雷达算法：改 `backend/app/graph_compiler.py`。
+- 改本地/公网 API 访问策略：改 `frontend/src/main.tsx` 的 `API_BASE`。
+- 改后端允许访问域名：改 `backend/app/main.py` 的 CORS 配置。
 - `data/texts/zh_cn.json` 是 UTF-8 JSON。中文写入后必须回读确认无乱码。
 
 保留 legacy API：
@@ -243,6 +284,21 @@ https://hongworld.online/tools/magic-spell-compiler/
 
 10. 不要把服务器密码、密钥或临时凭据写入项目文件。需要 sudo 或 SSH 时，只在当次命令中使用用户已授权的信息。
 
+服务器后端当前约定：
+
+```text
+/home/xuan/magic-spell-backend
+python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers
+```
+
+公网 Nginx 应把同源 `/api/` 反代到：
+
+```text
+http://127.0.0.1:8000/api/
+```
+
+前端静态页不要直接访问 `154.219.106.185:8000`。
+
 ## 延后范围
 
 以下内容不要在 MVP 中提前实现：
@@ -251,7 +307,7 @@ https://hongworld.online/tools/magic-spell-compiler/
 - 玩家跨阶段手动画边。
 - 结界、祈愿、契约、附魔完整体系。
 - 项目保存、版本历史、登录权限。
-- 部署、反向代理和备份。
+- 完整运维面板、自动备份、监控告警。
 - AI 自动命名或 AI 自动规则判定。
 - 从 Markdown 自动生成运行时规则。
 
