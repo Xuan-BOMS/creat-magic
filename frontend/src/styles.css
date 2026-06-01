@@ -198,6 +198,7 @@ select:focus-visible {
 .stage-arrow {
   display: grid;
   place-items: center;
+  pointer-events: none;
   color: rgba(211, 160, 68, 0.54);
   font-size: 24px;
   font-weight: 900;

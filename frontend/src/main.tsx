@@ -100,7 +100,9 @@ type CompileResult = {
   };
 };
 
-const API_BASE = import.meta.env.VITE_API_BASE ?? "http://127.0.0.1:8000";
+const API_BASE =
+  import.meta.env.VITE_API_BASE ??
+  (["127.0.0.1", "localhost"].includes(window.location.hostname) ? "http://127.0.0.1:8000" : "");
 const storageKey = "spell-graph-builder-state";
 const nodeViewModeKey = "spell-node-drawer-compact";
 const selectionOrder: NodeSelectionClass[] = ["core", "detail", "tuning"];

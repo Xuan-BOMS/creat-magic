@@ -7,7 +7,13 @@ app = FastAPI(title="轰界法术生成器", version="0.1.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5173", "http://localhost:5173"],
+    allow_origins=[
+        "http://127.0.0.1:5173",
+        "http://localhost:5173",
+        "http://154.219.106.185",
+        "https://hongworld.online",
+        "http://hongworld.online",
+    ],
     allow_origin_regex=r"^http://(127\.0\.0\.1|localhost):517\d$",
     allow_credentials=True,
     allow_methods=["*"],

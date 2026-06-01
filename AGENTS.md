@@ -142,6 +142,107 @@ D:\magic\creat-magic\docs\ui\assets\workbench-main-ui-reference.svg
 - 滑出节点抽屉可展开/收起，点击步骤只显示对应步骤节点。
 - 雷达图必须显示中间填充面积，且只含六个维度。
 
+## 网站更新与部署流程
+
+当用户要求“更新到网站”“部署到网站”“复制后 hexo 推送”或类似操作时，按以下完整流程执行。
+
+站点仓库：
+
+```text
+D:\Code\Xuan-BOMS.github.io
+```
+
+工具页静态目录：
+
+```text
+D:\Code\Xuan-BOMS.github.io\source\tools\magic-spell-compiler
+D:\Code\Xuan-BOMS.github.io\source\tools\magic-spell-compiler\assets
+```
+
+执行步骤：
+
+1. 在本项目构建前端。
+
+```powershell
+cd D:\magic\creat-magic\frontend
+npm run build
+```
+
+2. 读取 `D:\magic\creat-magic\frontend\dist\assets` 下最新生成的 `index-*.js` 和 `index-*.css`。
+
+3. 删除 Hexo 工具页 assets 目录内旧的 `index-*.js` 和 `index-*.css`，再复制本次构建产物到：
+
+```text
+D:\Code\Xuan-BOMS.github.io\source\tools\magic-spell-compiler\assets
+```
+
+4. 更新：
+
+```text
+D:\Code\Xuan-BOMS.github.io\source\tools\magic-spell-compiler\index.html
+```
+
+确保入口引用形如：
+
+```html
+<script type="module" crossorigin src="/tools/magic-spell-compiler/assets/index-*.js"></script>
+<link rel="stylesheet" crossorigin href="/tools/magic-spell-compiler/assets/index-*.css">
+```
+
+5. 部署前静态检查。至少确认：
+
+```powershell
+cd D:\Code\Xuan-BOMS.github.io
+rg -n "154\.219\.106\.185:8000|index-|/api/texts|node-tray|picker-open" source\tools\magic-spell-compiler
+```
+
+- 公网页面不得直连 `154.219.106.185:8000`。
+- 本地开发分支保留 `127.0.0.1:8000` 可以接受。
+- 公网页面应使用同源 `/api/...`，由 Nginx 反代到后端。
+
+6. 执行 Hexo 更新。
+
+```powershell
+cd D:\Code\Xuan-BOMS.github.io
+hexo clean
+hexo generate
+hexo deploy
+```
+
+`hexo clean/generate/deploy` 可能重写 `source\vedio\subtitles.json`，这是站点脚本行为；若与当前需求无关，不要回滚用户已有改动。
+
+7. 线上 API 检查。
+
+```powershell
+curl.exe -i --max-time 15 http://154.219.106.185/api/health
+curl.exe -i --max-time 15 https://hongworld.online/api/health
+```
+
+期望返回 `{"status":"ok"}`。
+
+8. 线上页面检查。至少打开并验证：
+
+```text
+http://154.219.106.185/tools/magic-spell-compiler/
+https://hongworld.online/tools/magic-spell-compiler/
+```
+
+必须确认：
+
+- 页面不显示“无法连接后端 API。”
+- 节点库可以载入。
+- 默认链路可以编译出法术名与合法状态。
+- 六维雷达图显示填充面积。
+- 桌面 1440x900 无主要布局遮挡。
+- 手机窄屏无水平溢出。
+- 点击四阶段区域能弹出下方节点栏。
+- 节点栏可手动收起。
+- 浏览器控制台无错误。
+
+9. 如果手机端点击阶段失败，优先检查视觉元素是否拦截点击，例如 `.stage-arrow` 应保持 `pointer-events: none;`。
+
+10. 不要把服务器密码、密钥或临时凭据写入项目文件。需要 sudo 或 SSH 时，只在当次命令中使用用户已授权的信息。
+
 ## 延后范围
 
 以下内容不要在 MVP 中提前实现：
